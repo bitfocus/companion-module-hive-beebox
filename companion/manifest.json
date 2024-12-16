@@ -1,0 +1,26 @@
+{
+	"id": "hive-beeblade",
+	"name": "hive-beeblade",
+	"shortname": "beeblade",
+	"description": "hive-beeblade controller",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-hive-beeblade.git",
+	"bugs": "https://github.com/bitfocus/companion-module-hive-beeblade/issues",
+	"maintainers": [
+		{
+			"name": "Nigel Sadler",
+			"email": "nigel@hive.run"
+		}
+	],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../main.js"
+	},
+	"legacyIds": [],
+	"manufacturer": "Hive",
+	"products": ["Beeblade"],
+	"keywords": ["Media Player", "Media Engine"]
+}
