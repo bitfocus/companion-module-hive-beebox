@@ -7,11 +7,12 @@ const SVRemotePatch = require('./hive/SVRemotePatchNodeJS');
 
 ipRegex = '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
 
-var localSVPatch = new SVRemotePatch();
+
 
 class HiveBeebladeInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
+		this.localSVPatch = new SVRemotePatch();
 	}
 
 	async init(config) {
@@ -36,24 +37,24 @@ class HiveBeebladeInstance extends InstanceBase {
 			return;
 		}
 
-		if (localSVPatch.connected) {
-			localSVPatch.webSocket.close();
+		if (this.localSVPatch.connected) {
+			this.localSVPatch.webSocket.close();
 		}
 
 		this.updateStatus(InstanceStatus.Connecting, 'Connecting');
 
-		localSVPatch.SetOnConnectCallback(() => {
+		this.localSVPatch.SetOnConnectCallback(() => {
 			this.updateStatus(InstanceStatus.Ok, 'Connected');
 
 		});
 
-		localSVPatch.SetOnDisconnectCallback(() => {
+		this.localSVPatch.SetOnDisconnectCallback(() => {
 			this.updateStatus(InstanceStatus.Disconnected, 'Disconnected');
 		});
 
 		this.log('debug', 'Connecting to ' + ip)
 
-		localSVPatch.connectTo('ws://' + ip + ':9002');
+		this.localSVPatch.connectTo('ws://' + ip + ':9002');
 	}
 	// When module gets deleted
 	async destroy() {
