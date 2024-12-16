@@ -13,7 +13,6 @@ class ModuleInstance extends InstanceBase {
 		this.config = config
 
 		this.updateStatus(InstanceStatus.Ok)
-
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
@@ -32,18 +31,12 @@ class ModuleInstance extends InstanceBase {
 		return [
 			{
 				type: 'textinput',
-				id: 'host',
-				label: 'Target IP',
+				id: 'ip',
+				label: 'Device IP Address',
+				tooltip: 'The IP address of the Beeblade or Beebox device',
 				width: 8,
 				regex: Regex.IP,
-			},
-			{
-				type: 'textinput',
-				id: 'port',
-				label: 'Target Port',
-				width: 4,
-				regex: Regex.PORT,
-			},
+			}
 		]
 	}
 

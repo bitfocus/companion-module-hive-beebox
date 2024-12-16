@@ -2,7 +2,6 @@
 	"name": "hive-beeblade",
 	"version": "1.0.0",
 	"main": "main.js",
-	"type":"module",
 	"scripts": {
 		"format": "prettier -w .",
 		"package": "companion-module-build"
