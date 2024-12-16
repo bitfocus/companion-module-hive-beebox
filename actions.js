@@ -1,115 +1,186 @@
 module.exports = function (self) {
 	self.setActionDefinitions(
 		{
-			enableplaylist: {
-				name: 'Enable Playlist',
+			enabledisablemodule: {
+				name: 'Enable/Disable Module',
 				options: [
+					{
+						id: 'module',
+						type: 'dropdown',
+						label: 'Select module',
+						choices: [
+							{ id: 'playlist', label: 'Playlist' },
+							{ id: 'timeline', label: 'Timeline' },
+							{ id: 'tc1', label: 'Timecode Cue List Layer 1' },
+							{ id: 'tc2', label: 'Timecode Cue List Layer 2' },
+							{ id: 'scheduler', label: 'Scheduler' },
+							{ id: 'timeline', label: 'Timeline' },
+							{ id: 'screenberry', label: 'Screenberry Mapping' },
+							{ id: 'vioso', label: 'Vioso Mapping' },
+							{ id: 'screenberrycal', label: 'Screenberry Calibration Mode' },
+							{ id: 'viosocal', label: 'Vioso Calibration Mode' },
+						],
+						default: 'playlist'
+					},
+					{
+						id: 'enable',
+						type: 'checkbox',
+						label: 'Enable ?',
+						default: true
+					}
 				],
 				callback: async (event, context) => {
-					self.log('info', "Sending enable playlist command")
-					self.setTimecodeEnable(false, 1)
-					self.setTimecodeEnable(false, 2)
-					self.setTimelineEnable(false)
-					self.setPlayListEnable(true)
+					self.log('info', "Sending enable disable command, module=" + event.options.module + " enable=" + event.options.enable)
+					switch (event.options.module) {
+						case 'playlist':
+							if (event.options.enable) {
+								self.setTimecodeEnable(false, 1)
+								self.setTimecodeEnable(false, 2)
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(true)
+							} else {
+								self.setPlayListEnable(false)
+							}
+							break
+						case 'timeline':
+							if (event.options.enable) {
+								self.setTimecodeEnable(false, 1)
+								self.setTimecodeEnable(false, 2)
+								self.setPlayListEnable(false)
+								self.setTimelineEnable(true)
 
+							} else {
+								self.setTimelineEnable(false)
+							}
+							break
+						case 'tc1':
+							if (event.options.enable) {
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(false)
+								self.setTimecodeEnable(true, 1)
+
+							} else {
+								self.setTimecodeEnable(false, 1)
+							}
+							break
+						case 'tc2':
+							if (event.options.enable) {
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(false)
+								self.setTimecodeEnable(true, 2)
+
+							} else {
+								self.setTimecodeEnable(false, 2)
+							}
+							break
+						case 'scheduler':
+							self.setScheduleEnable(event.options.enable)
+							break
+						case 'screenberry':
+							if (event.options.enable) {
+								self.setViosoEnable(false)
+								self.setScreenberryEnable(true)
+							} else {
+								self.setScreenberryEnable(false)
+							}
+							break
+						case 'vioso':
+							if (event.options.enable) {
+								self.setScreenberryEnable(false)
+								self.setViosoEnable(true)
+							} else {
+								self.setViosoEnable(false)
+							}
+							break
+						case 'screenberrycal':
+							if (event.options.enable) {
+								self.setViosoCalibrationEnable(false)
+								self.setScreenberryCalibrationEnable(true)
+							} else {
+								self.setScreenberryCalibrationEnable(false)
+							}
+							break
+						case 'viosocal':
+							if (event.options.enable) {
+								self.setScreenberryCalibrationEnable(false)
+								self.setViosoCalibrationEnable(true)
+							} else {
+								self.setViosoCalibrationEnable(false)
+							}
+							break
+					}
 				},
 			},
-			enabletimeline: {
-				name: 'Enable Timeline',
+			togglemodule: {
+				name: 'Toggle Module State',
 				options: [
+					{
+						id: 'module',
+						type: 'dropdown',
+						label: 'Select module',
+						choices: [
+							{ id: 'playlist', label: 'Playlist' },
+							{ id: 'timeline', label: 'Timeline' },
+							{ id: 'tc1', label: 'Timecode Cue List Layer 1' },
+							{ id: 'tc2', label: 'Timecode Cue List Layer 2' },
+							{ id: 'scheduler', label: 'Scheduler' },
+							{ id: 'timeline', label: 'Timeline' },
+							{ id: 'vioso', label: 'Vioso Mapping' },
+							{ id: 'screenberry', label: 'Screenberry Mapping' },
+							{ id: 'viosocal', label: 'Vioso Calibration Mode' },
+							{ id: 'screenberrycal', label: 'Screenberry Calibration Mode' },
+						],
+						default: 'playlist'
+					}
 				],
 				callback: async (event, context) => {
-					self.log('info', "Sending enable timeline command")
-					self.setTimecodeEnable(false, 1)
-					self.setTimecodeEnable(false, 2)
-					self.setPlayListEnable(false)
-					self.setTimelineEnable(true)
+					self.log('info', "Sending toggle state command, module=" + event.options.module)
+					switch (event.options.module) {
+						case 'playlist':
+							if (event.options.enable) {
+								self.setTimecodeEnable(false, 1)
+								self.setTimecodeEnable(false, 2)
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(true)
+							} else {
+								self.setPlayListEnable(false)
+							}
+							break
+						case 'timeline':
+							if (event.options.enable) {
+								self.setTimecodeEnable(false, 1)
+								self.setTimecodeEnable(false, 2)
+								self.setPlayListEnable(false)
+								self.setTimelineEnable(true)
 
-				},
-			},
-			enabletimecodelone: {
-				name: 'Enable Timecode Cue List Layer 1',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending enable timecode cue list layer 1 command")
-					self.setTimelineEnable(false)
-					self.setPlayListEnable(false)
-					self.setTimecodeEnable(true, 1)
+							} else {
+								self.setTimelineEnable(false)
+							}
+							break
+						case 'tc1':
+							if (event.options.enable) {
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(false)
+								self.setTimecodeEnable(true, 1)
 
-				},
-			},
-			enabletimecodeltwo: {
-				name: 'Enable Timecode Cue List Layer 2',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending enable timecode cue list layer 2 command")
-					self.setTimelineEnable(false)
-					self.setPlayListEnable(false)
-					self.setTimecodeEnable(true, 2)
+							} else {
+								self.setTimecodeEnable(false, 1)
+							}
+							break
+						case 'tc2':
+							if (event.options.enable) {
+								self.setTimelineEnable(false)
+								self.setPlayListEnable(false)
+								self.setTimecodeEnable(true, 2)
 
-				},
-			},
-			disableplaylist: {
-				name: 'Disable Playlist',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending disable playlist command")
-					self.setPlayListEnable(false)
-
-				},
-			},
-			disabletimeline: {
-				name: 'Disable Timeline',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending disable timeline command")
-					self.setTimelineEnable(false)
-
-				},
-			},
-			disabletimecodelone: {
-				name: 'Disable Timecode Cue List Layer 1',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending disable timecode layer 1 command")
-					self.setTimecodeEnable(false, 1)
-
-				},
-			},
-			disabletimecodeltwo: {
-				name: 'Disable Timecode Cue List Layer 2',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending disable timecode layer 2 command")
-					self.setTimecodeEnable(false, 2)
-
-				},
-			},
-			enableschedule: {
-				name: 'Enable Scheduler',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending enable scheduler command")
-					self.setScheduleEnable(true)
-
-
-				},
-			},
-			disableschedule: {
-				name: 'Disable Scheduler',
-				options: [
-				],
-				callback: async (event, context) => {
-					self.log('info', "Sending disable scheduler command")
-					self.setScheduleEnable(false)
-
+							} else {
+								self.setTimecodeEnable(false, 2)
+							}
+							break
+						case 'scheduler':
+							self.setScheduleEnable(event.options.enable)
+							break
+					}
 				},
 			},
 		},

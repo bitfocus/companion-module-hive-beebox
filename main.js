@@ -91,22 +91,29 @@ class HiveBeebladeInstance extends InstanceBase {
 		UpdateVariableDefinitions(this)
 	}
 
+	///////////////////////Hive Functions ///////////////////////////
+
 	setPlayListEnable(enable) {
 		if (this.localSVPatch.connected)
 			this.localSVPatch.UpdatePatchJSON("/Play List", [{ "op": "replace", "path": "/usePlayList", "value": enable ? 1 : 0 }])
+	}
 
+	getPlayList() {
+		let playlist = null
+		if (this.localSVPatch.connected)
+			this.localSVPatch.GetPatchJSON("/Play List", (data) => {
+				playlist = data
+			})
 	}
 
 	setTimelineEnable(enable) {
 		if (this.localSVPatch.connected)
 			this.localSVPatch.UpdatePatchJSON("/Timeline", [{ "op": "replace", "path": "/useTimeline", "value": enable ? 1 : 0 }])
-
 	}
 
 	setScheduleEnable(enable) {
 		if (this.localSVPatch.connected)
 			this.localSVPatch.UpdatePatchJSON("/Schedule", [{ "op": "replace", "path": "/useSchedule", "value": enable ? 1 : 0 }])
-
 	}
 
 	setTimecodeEnable(enable, layer) {
@@ -115,7 +122,26 @@ class HiveBeebladeInstance extends InstanceBase {
 			if (this.localSVPatch.connected)
 				this.localSVPatch.UpdatePatchJSON("/Timecode Cue List", [{ "op": "replace", "path": "/layers/" + layer + "/useCueList", "value": enable ? 1 : 0 }])
 		}
+	}
 
+	setViosoEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Vioso WB Settings", [{ "op": "replace", "path": "/enabled", "value": enable ? 1 : 0 }])
+	}
+
+	setViosoCalibrationEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Vioso WB Settings", [{ "op": "replace", "path": "/calibrationMode", "value": enable ? 1 : 0 }])
+	}
+
+	setScreenberryEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Screenberry WB Settings", [{ "op": "replace", "path": "/enabled", "value": enable ? 1 : 0 }])
+	}
+
+	setScreenberryCalibrationEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Screenberry WB Settings", [{ "op": "replace", "path": "/calibrationMode", "value": enable ? 1 : 0 }])
 	}
 }
 
