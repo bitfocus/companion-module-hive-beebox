@@ -90,6 +90,33 @@ class HiveBeebladeInstance extends InstanceBase {
 	updateVariableDefinitions() {
 		UpdateVariableDefinitions(this)
 	}
+
+	setPlayListEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Play List", [{ "op": "replace", "path": "/usePlayList", "value": enable ? 1 : 0 }])
+
+	}
+
+	setTimelineEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Timeline", [{ "op": "replace", "path": "/useTimeline", "value": enable ? 1 : 0 }])
+
+	}
+
+	setScheduleEnable(enable) {
+		if (this.localSVPatch.connected)
+			this.localSVPatch.UpdatePatchJSON("/Schedule", [{ "op": "replace", "path": "/useSchedule", "value": enable ? 1 : 0 }])
+
+	}
+
+	setTimecodeEnable(enable, layer) {
+		if (layer > 0 && layer) {
+			layer = layer - 1
+			if (this.localSVPatch.connected)
+				this.localSVPatch.UpdatePatchJSON("/Timecode Cue List", [{ "op": "replace", "path": "/layers/" + layer + "/useCueList", "value": enable ? 1 : 0 }])
+		}
+
+	}
 }
 
 runEntrypoint(HiveBeebladeInstance, UpgradeScripts)
