@@ -3,19 +3,57 @@ const UpgradeScripts = require('./upgrades')
 const UpdateActions = require('./actions')
 const UpdateFeedbacks = require('./feedbacks')
 const UpdateVariableDefinitions = require('./variables')
+const SVRemotePatch = require('./hive/SVRemotePatchNodeJS');
 
-class ModuleInstance extends InstanceBase {
+ipRegex = '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+
+var localSVPatch = new SVRemotePatch();
+
+class HiveBeebladeInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 	}
 
 	async init(config) {
 		this.config = config
-
-		this.updateStatus(InstanceStatus.Ok)
+		this.initializePatch(config.ip)
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
+	}
+
+	initializePatch(ip) {
+
+		//ip = "1.6.7";
+
+		if (!ip || ip === '') {
+			this.updateStatus(InstanceStatus.BadConfig, 'Missing device IP address');
+			return;
+		}
+
+		if (!ip.match(new RegExp(ipRegex))) {
+			this.updateStatus(InstanceStatus.BadConfig, 'Invalid or missing IP address');
+			return;
+		}
+
+		if (localSVPatch.connected) {
+			localSVPatch.webSocket.close();
+		}
+
+		this.updateStatus(InstanceStatus.Connecting, 'Connecting');
+
+		localSVPatch.SetOnConnectCallback(() => {
+			this.updateStatus(InstanceStatus.Ok, 'Connected');
+
+		});
+
+		localSVPatch.SetOnDisconnectCallback(() => {
+			this.updateStatus(InstanceStatus.Disconnected, 'Disconnected');
+		});
+
+		this.log('debug', 'Connecting to ' + ip)
+
+		localSVPatch.connectTo('ws://' + ip + ':9002');
 	}
 	// When module gets deleted
 	async destroy() {
@@ -53,4 +91,4 @@ class ModuleInstance extends InstanceBase {
 	}
 }
 
-runEntrypoint(ModuleInstance, UpgradeScripts)
+runEntrypoint(HiveBeebladeInstance, UpgradeScripts)

@@ -1,19 +1,14 @@
 module.exports = function (self) {
 	self.setActionDefinitions({
-		sample_action: {
-			name: 'My First Action',
+		enableplaylist: {
+			name: 'Enable Playlist',
 			options: [
-				{
-					id: 'num',
-					type: 'number',
-					label: 'Test',
-					default: 5,
-					min: 0,
-					max: 100,
-				},
 			],
-			callback: async (event) => {
-				console.log('Hello world!', event.options.num)
+			callback: async (event, context) => {
+				self.log('debug', "Sending:  stuff")
+				//this.log('debug', 'doingit');
+				//this.localSVPatch.UpdatePatchJSON("/Play List", [{ "op": "replace", "path": "/usePlayList", "value": 1 }])
+
 			},
 		},
 	})
