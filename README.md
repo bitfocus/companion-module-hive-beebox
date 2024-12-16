@@ -1,1 +1,1 @@
-# companion-modules-hive-beebox
+# companion-module-hive-beebox
