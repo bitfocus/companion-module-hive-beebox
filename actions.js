@@ -135,9 +135,13 @@ module.exports = function (self) {
 				],
 				callback: async (event, context) => {
 					self.log('info', "Sending toggle state command, module=" + event.options.module)
+					if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry) {
+						self.log('error', "Missing data, please check connection")
+						return
+					}
 					switch (event.options.module) {
 						case 'playlist':
-							if (event.options.enable) {
+							if (!self.blade.playlist.usePlayList) {
 								self.setTimecodeEnable(false, 1)
 								self.setTimecodeEnable(false, 2)
 								self.setTimelineEnable(false)
@@ -147,7 +151,7 @@ module.exports = function (self) {
 							}
 							break
 						case 'timeline':
-							if (event.options.enable) {
+							if (!self.blade.timeline.useTimeline) {
 								self.setTimecodeEnable(false, 1)
 								self.setTimecodeEnable(false, 2)
 								self.setPlayListEnable(false)
@@ -158,7 +162,7 @@ module.exports = function (self) {
 							}
 							break
 						case 'tc1':
-							if (event.options.enable) {
+							if (!self.blade.timecode.layers[0].useCueList) {
 								self.setTimelineEnable(false)
 								self.setPlayListEnable(false)
 								self.setTimecodeEnable(true, 1)
@@ -168,7 +172,7 @@ module.exports = function (self) {
 							}
 							break
 						case 'tc2':
-							if (event.options.enable) {
+							if (!self.blade.timecode.layers[1].useCueList) {
 								self.setTimelineEnable(false)
 								self.setPlayListEnable(false)
 								self.setTimecodeEnable(true, 2)
@@ -178,7 +182,39 @@ module.exports = function (self) {
 							}
 							break
 						case 'scheduler':
-							self.setScheduleEnable(event.options.enable)
+							self.setScheduleEnable(!self.blade.schedule.useSchedule)
+							break
+						case 'screenberry':
+							if (!self.blade.screenberry.enabled) {
+								self.setViosoEnable(false)
+								self.setScreenberryEnable(true)
+							} else {
+								self.setScreenberryEnable(false)
+							}
+							break
+						case 'vioso':
+							if (!self.blade.vioso.enabled) {
+								self.setScreenberryEnable(false)
+								self.setViosoEnable(true)
+							} else {
+								self.setViosoEnable(false)
+							}
+							break
+						case 'screenberrycal':
+							if (!self.blade.screenberry.calibrationMode) {
+								self.setViosoCalibrationEnable(false)
+								self.setScreenberryCalibrationEnable(true)
+							} else {
+								self.setScreenberryCalibrationEnable(false)
+							}
+							break
+						case 'viosocal':
+							if (!self.blade.vioso.calibrationMode) {
+								self.setScreenberryCalibrationEnable(false)
+								self.setViosoCalibrationEnable(true)
+							} else {
+								self.setViosoCalibrationEnable(false)
+							}
 							break
 					}
 				},

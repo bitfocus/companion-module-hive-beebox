@@ -7,16 +7,22 @@ const SVRemotePatch = require('./hive/SVRemotePatchNodeJS');
 
 ipRegex = '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
 
-
-
 class HiveBeebladeInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
-		this.localSVPatch = new SVRemotePatch();
+		this.localSVPatch = new SVRemotePatch(this);
 	}
 
 	async init(config) {
 		this.config = config
+		this.blade = {
+			playlist: null,
+			timeline: null,
+			timecode: null,
+			schedule: null,
+			screenberry: null,
+			vioso: null
+		}
 		this.initializePatch(config.ip)
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
@@ -38,14 +44,15 @@ class HiveBeebladeInstance extends InstanceBase {
 		}
 
 		if (this.localSVPatch.connected) {
-			this.localSVPatch.webSocket.close();
+			this.localSVPatch.disconnect()
 		}
 
 		this.updateStatus(InstanceStatus.Connecting, 'Connecting');
 
 		this.localSVPatch.SetOnConnectCallback(() => {
 			this.updateStatus(InstanceStatus.Ok, 'Connected');
-
+			// get latest data
+			this.updateBlade()
 		});
 
 		this.localSVPatch.SetOnDisconnectCallback(() => {
@@ -59,10 +66,22 @@ class HiveBeebladeInstance extends InstanceBase {
 	// When module gets deleted
 	async destroy() {
 		this.log('debug', 'destroy')
+		if (this.localSVPatch.connected) {
+			this.localSVPatch.disconnect()
+		}
+		this.updateStatus(InstanceStatus.Disconnected, 'Disconnected');
 	}
 
 	async configUpdated(config) {
+		let connect = false;
+		if (this.config.ip !== config.ip) {
+			connect = true;
+		}
 		this.config = config
+
+		if (connect) {
+			this.initializePatch(config.ip)
+		}
 	}
 
 	// Return config fields for web config
@@ -92,6 +111,43 @@ class HiveBeebladeInstance extends InstanceBase {
 	}
 
 	///////////////////////Hive Functions ///////////////////////////
+
+	updateBlade() {
+		if (!this.localSVPatch.connected) return;
+
+		this.log('debug', 'Requesting latest data from Hive Device')
+
+		this.localSVPatch.WatchPatchJSON("/Play List", (playlist) => {
+			this.blade.playlist = playlist
+			this.log('debug', 'Updated PlaylistData = ' + JSON.stringify(this.blade.playlist))
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Timeline", (timeline) => {
+			this.blade.timeline = timeline
+			this.log('debug', 'Updated TimelineData = ' + JSON.stringify(this.blade.timeline))
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Schedule", (schedule) => {
+			this.blade.schedule = schedule
+			this.log('debug', 'Updated ScheduleData = ' + JSON.stringify(this.blade.schedule))
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Timecode Cue List", (timecode) => {
+			this.blade.timecode = timecode
+			this.log('debug', 'Updated Timecode Cue List Data = ' + JSON.stringify(this.blade.timecode))
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Vioso WB Settings", (vioso) => {
+			this.blade.vioso = vioso
+			this.log('debug', 'Updated Vioso Data = ' + JSON.stringify(this.blade.vioso))
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Screenberry WB Settings", (screenberry) => {
+			this.blade.screenberry = screenberry
+			this.log('debug', 'Updated Screenberry Data = ' + JSON.stringify(this.blade.screenberry))
+		})
+	}
+
 
 	setPlayListEnable(enable) {
 		if (this.localSVPatch.connected)
