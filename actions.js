@@ -1,4 +1,8 @@
 module.exports = function (self) {
+	let paramOptions = []
+	self.paramDescriptors.forEach((param) => {
+		paramOptions.push({ id: param.name, label: param.label })
+	})
 	self.setActionDefinitions(
 		{
 			enabledisablemodule: {
@@ -218,6 +222,38 @@ module.exports = function (self) {
 							break
 					}
 				},
+			},
+			setparameter: {
+				name: 'Set Parameter Value',
+				options: [
+					{
+						id: 'parameter',
+						type: 'dropdown',
+						label: 'Select parameter',
+						choices: paramOptions,
+						default: 'file'
+					},
+					{
+						id: 'intvalue',
+						type: 'number',
+						label: 'Value',
+						default: 0,
+						min: 0,
+						max: 9999,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							self.log('info', 'Checking if ' + options.parameter + ' is an integer')
+							//let par = self.paramDescriptors.find((param) => param.name === options.parameter)
+							//self.log('info', 'Found parameter ' + par)
+							//return par.type === 'integer'
+							//let names=['file','folder']
+							return options.parameter === data[0].name
+						}
+					}
+				],
+				callback: (action) => {
+					console.log('Hello World!')
+				}
 			},
 		},
 	)
