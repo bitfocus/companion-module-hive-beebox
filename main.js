@@ -120,31 +120,37 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.localSVPatch.WatchPatchJSON("/Play List", (playlist) => {
 			this.blade.playlist = playlist
 			this.log('debug', 'Updated PlaylistData = ' + JSON.stringify(this.blade.playlist))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Timeline", (timeline) => {
 			this.blade.timeline = timeline
 			this.log('debug', 'Updated TimelineData = ' + JSON.stringify(this.blade.timeline))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Schedule", (schedule) => {
 			this.blade.schedule = schedule
 			this.log('debug', 'Updated ScheduleData = ' + JSON.stringify(this.blade.schedule))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Timecode Cue List", (timecode) => {
 			this.blade.timecode = timecode
 			this.log('debug', 'Updated Timecode Cue List Data = ' + JSON.stringify(this.blade.timecode))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Vioso WB Settings", (vioso) => {
 			this.blade.vioso = vioso
 			this.log('debug', 'Updated Vioso Data = ' + JSON.stringify(this.blade.vioso))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Screenberry WB Settings", (screenberry) => {
 			this.blade.screenberry = screenberry
 			this.log('debug', 'Updated Screenberry Data = ' + JSON.stringify(this.blade.screenberry))
+			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 	}
 
