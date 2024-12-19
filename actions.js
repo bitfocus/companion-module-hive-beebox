@@ -234,22 +234,74 @@ module.exports = function (self) {
 						default: 'file'
 					},
 					{
-						id: 'intvalue',
+						id: 'int1000',
 						type: 'number',
 						label: 'Value',
 						default: 0,
 						min: 0,
-						max: 9999,
+						max: 1000,
 						isVisibleData: self.paramDescriptors,
 						isVisible: (options, data) => {
-							self.log('info', 'Checking if ' + options.parameter + ' is an integer')
-							//let par = self.paramDescriptors.find((param) => param.name === options.parameter)
-							//self.log('info', 'Found parameter ' + par)
-							//return par.type === 'integer'
-							//let names=['file','folder']
-							return options.parameter === data[0].name
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'integer' && par.min === 0 && par.max == 1000
+							return show
 						}
-					}
+					},
+					{
+						id: 'int100',
+						type: 'number',
+						label: 'Value',
+						default: 0,
+						min: 0,
+						max: 100,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'integer' && par.min === 0 && par.max == 100
+							return show
+						}
+					},
+					{
+						id: 'inframe',
+						type: 'number',
+						label: 'In Frame',
+						default: 0,
+						min: 0,
+						max: 9999999,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'inframe'
+							return show
+						}
+					},
+					{
+						id: 'outframe',
+						type: 'number',
+						label: 'Out Frame',
+						default: 9999999,
+						min: 0,
+						max: 9999999,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'outframe'
+							return show
+						}
+					},
+					{
+						id: 'level',
+						type: 'number',
+						label: 'Value',
+						default: 0,
+						min: 0,
+						max: 100,
+						range: true,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'range'
+							return show
+						}
+					},
 				],
 				callback: (action) => {
 					console.log('Hello World!')
