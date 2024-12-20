@@ -249,6 +249,64 @@ module.exports = function (self) {
 					}
 				},
 			},
+			loadmoduledata: {
+				name: 'Load Module Data',
+				options: [
+					{
+						id: 'module',
+						type: 'dropdown',
+						label: 'Select module',
+						choices: [
+							{ id: 'playlist', label: 'Playlist' },
+							{ id: 'timeline', label: 'Timeline' },
+							{ id: 'timecode', label: 'Timecode Cue List' },
+							{ id: 'scheduler', label: 'Scheduler' }
+						],
+						default: 'playlist'
+					},
+					{
+						id: 'instructions1',
+						type: 'static-text',
+						label: 'Instructions:',
+						value: 'To set the data for a module in Hive you need to enter the data that you want to set in the text box below. This must be in JSON format and be formatted correctly for the module that it is intended for. The easiest way to get this data is to export the settings from the appropriate module (by clicking export in the appropriate tab in the GUI) and then copying the contents of the downloaded file into the text box below.'
+
+					},
+					{
+						id: 'instructions2',
+						type: 'static-text',
+						label: 'Playlist Example:',
+						value: 'If you want to load a playlist, create the playlist in the playlist tab in the Hive GUI, then click export in the top right - this will download a file called Hive_Playlist.json, now open this file in a text editor and copy all the contents to the clipboard, finally paste that content into the box below. Whenever you activate this action that playlist will get loaded into the playlist module.'
+
+					},
+					{
+						id: 'data',
+						type: 'textinput',
+						label: 'Paste JSON data here',
+						required: true,
+						default: ''
+					}
+
+				],
+				callback: async (event, context) => {
+					self.log('info', "Loading data for module, module=" + event.options.module)
+					if (event.options.data === '') { self.log('error', "No data provided"); return }
+
+					switch (event.options.module) {
+						case 'playlist':
+							self.localSVPatch.SetPatchJSON("/Play List", event.options.data)
+							break
+						case 'timeline':
+
+							break
+						case 'timecode':
+
+							break
+						case 'scheduler':
+							break
+
+					}
+				},
+			},
 			setparameter: {
 				name: 'Set Parameter Value',
 				options: [
