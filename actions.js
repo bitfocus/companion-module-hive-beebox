@@ -3,6 +3,32 @@ module.exports = function (self) {
 	self.paramDescriptors.forEach((param) => {
 		paramOptions.push({ id: param.name, label: param.label })
 	})
+
+	let playmodeOptions = []
+	self.paramDescriptors.find((param) => param.name === 'playmode').options.forEach((par) => {
+		playmodeOptions.push({ id: par.value, label: par.label })
+	})
+
+	let framingmodeOptions = []
+	self.paramDescriptors.find((param) => param.name === 'framingmode').options.forEach((par) => {
+		framingmodeOptions.push({ id: par.value, label: par.label })
+	})
+
+	let blendmodeOptions = []
+	self.paramDescriptors.find((param) => param.name === 'blendmode').options.forEach((par) => {
+		blendmodeOptions.push({ id: par.value, label: par.label })
+	})
+
+	let frameblendingOptions = []
+	self.paramDescriptors.find((param) => param.name === 'frameblending').options.forEach((par) => {
+		frameblendingOptions.push({ id: par.value, label: par.label })
+	})
+
+	let transitionmodeOptions = []
+	self.paramDescriptors.find((param) => param.name === 'transitionmode').options.forEach((par) => {
+		transitionmodeOptions.push({ id: par.value, label: par.label })
+	})
+
 	self.setActionDefinitions(
 		{
 			enabledisablemodule: {
@@ -234,6 +260,16 @@ module.exports = function (self) {
 						default: 'file'
 					},
 					{
+						id: 'layer',
+						type: 'dropdown',
+						label: 'Select Layer',
+						choices: [
+							{ id: '1', label: 'Layer 1' },
+							{ id: '2', label: 'Layer 2' },
+						],
+						default: '1'
+					},
+					{
 						id: 'int1000',
 						type: 'number',
 						label: 'Value',
@@ -288,23 +324,270 @@ module.exports = function (self) {
 						}
 					},
 					{
-						id: 'level',
+						id: 'hour',
+						type: 'number',
+						label: 'Out Frame',
+						default: 0,
+						min: 0,
+						max: 23,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'tchour'
+							return show
+						}
+					},
+					{
+						id: 'minsec',
+						type: 'number',
+						label: 'Out Frame',
+						default: 0,
+						min: 0,
+						max: 59,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'tcminute' || options.parameter === 'tcsecond'
+							return show
+						}
+					},
+					{
+						id: 'frame',
+						type: 'number',
+						label: 'Out Frame',
+						default: 0,
+						min: 0,
+						max: 29,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'tcframe'
+							return show
+						}
+					},
+					{
+						id: 'pos',
 						type: 'number',
 						label: 'Value',
 						default: 0,
+						min: -100,
+						max: 100,
+						range: true,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'range' && par.min === -100 && par.max === 100
+							return show
+						}
+					},
+					{
+						id: 'rot',
+						type: 'number',
+						label: 'Value',
+						default: 0,
+						min: -1440,
+						max: 1440,
+						range: true,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'range' && par.min === -1440 && par.max === 1440
+							return show
+						}
+					},
+					{
+						id: 'scale',
+						type: 'number',
+						label: 'Value',
+						default: 100,
+						min: 0,
+						max: 1000,
+						range: true,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'range' && par.min === 0 && par.max === 1000
+							return show
+						}
+					},
+					{
+						id: 'transitionduration',
+						type: 'number',
+						label: 'Value (Milliseconds)',
+						default: 0,
+						min: 0,
+						max: 65535,
+						isVisibleData: self.paramDescriptors,
+						isVisible: (options, data) => {
+							let par = data.find((param) => param.name === options.parameter)
+							let show = par.type === 'integer' && par.min === 0 && par.max === 65535
+							return show
+						}
+					},
+					{
+						id: 'level',
+						type: 'number',
+						label: 'Value',
+						default: 100,
 						min: 0,
 						max: 100,
 						range: true,
 						isVisibleData: self.paramDescriptors,
 						isVisible: (options, data) => {
 							let par = data.find((param) => param.name === options.parameter)
-							let show = par.type === 'range'
+							let show = par.type === 'range' && par.min === 0 && par.max === 100
+							return show
+						}
+					},
+					{
+						id: 'playspeed',
+						type: 'number',
+						label: 'Value',
+						default: 100,
+						min: 0,
+						max: 1000,
+						range: true,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'playspeed'
+							return show
+						}
+					},
+					{
+						id: 'playmode',
+						type: 'dropdown',
+						label: 'Select Playmode',
+						choices: playmodeOptions,
+						default: 2,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'playmode'
+							return show
+						}
+					},
+					{
+						id: 'framingmode',
+						type: 'dropdown',
+						label: 'Select Framing Mode',
+						choices: framingmodeOptions,
+						default: 0,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'framingmode'
+							return show
+						}
+					},
+					{
+						id: 'blendmode',
+						type: 'dropdown',
+						label: 'Select Blend Mode',
+						choices: blendmodeOptions,
+						default: 0,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'blendmode'
+							return show
+						}
+					},
+					{
+						id: 'frameblending',
+						type: 'dropdown',
+						label: 'Select Frameblending Mode',
+						choices: frameblendingOptions,
+						default: 1,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'frameblending'
+							return show
+						}
+					},
+					{
+						id: 'transitionmode',
+						type: 'dropdown',
+						label: 'Select Transition Mode',
+						choices: transitionmodeOptions,
+						default: 0,
+						isVisible: (options, data) => {
+							let show = options.parameter === 'transitionmode'
 							return show
 						}
 					},
 				],
 				callback: (action) => {
-					console.log('Hello World!')
+					if (action.options.parameter === null) {
+						self.log('error', "Parameter not found")
+						return
+					}
+
+					let par = self.paramDescriptors.find((param) => param.name === action.options.parameter)
+
+					if (par === undefined) {
+						self.log('error', "Parameter not found")
+						return
+					}
+
+					let value = 0
+					let layer = action.options.layer
+					let path = par.path
+					path = path.replace('#', layer)
+
+					switch (par.type) {
+						case 'integer':
+							if (par.min === 0 && par.max == 1000) {
+								value = action.options.int1000
+							} else if (par.min === 0 && par.max == 100) {
+								value = action.options.int100
+							} else if (par.name === 'inframe') {
+								value = action.options.inframe
+							} else if (par.name === 'outframe') {
+								value = action.options.outframe
+							} else if (par.name === 'tchour') {
+								value = action.options.hour
+							} else if (par.name === 'tcminute' || par.name === 'tcsecond') {
+								value = action.options.minsec
+							} else if (par.name === 'tcframe') {
+								value = action.options.frame
+							} else if (par.name === 'transitionduration') {
+								value = action.options.transitionduration
+							}
+							break
+						case 'range':
+							if (par.min === -100 && par.max == 100) {
+								value = action.options.pos
+							} else if (par.min === -1440 && par.max == 1440) {
+								value = action.options.rot
+							} else if (par.min === 0 && par.max == 100) {
+								value = action.options.level
+							} else if (par.name === 'playspeed') {
+								value = action.options.playspeed
+							} else if (par.min === 0 && par.max == 1000) {
+								value = action.options.scale
+							}
+							break
+						case 'select':
+							if (par.name === 'playmode') {
+								value = action.options.playmode
+							} else if (par.name === 'framingmode') {
+								value = action.options.framingmode
+							} else if (par.name === 'blendmode') {
+								value = action.options.blendmode
+							} else if (par.name === 'frameblending') {
+								value = action.options.frameblending
+							} else if (par.name === 'transitionmode') {
+								value = action.options.transitionmode
+							}
+							break
+
+					}
+
+					if (value < par.min || value > par.max) {
+						self.log('error', "Value out of range")
+						return
+					}
+
+					let outVal = value
+					if (par.type === 'range') {
+						outVal = self.normalisedValue(par, value)
+					}
+
+					self.log('info', "Setting parameter " + action.options.parameter + " to " + outVal)
+
+					// now finally actually set the value
+					if (self.localSVPatch.connected) {
+						self.localSVPatch.SetPatchDouble(path, outVal)
+					}
 				}
 			},
 		},

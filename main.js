@@ -67,7 +67,7 @@ class HiveBeebladeInstance extends InstanceBase {
 			},
 			{ name: "lut", type: "integer", label: "L,U,T Select", min: 0, max: 100, default: 0.0, defaultstep: 1, path: `LAYER #/LUT/Value`, unit: "" },
 			{ name: "playspeed", type: "range", label: "Play Speed", min: 0, max: 1000, default: 0.5, defaultstep: 10, path: `LAYER #/PLAY SPEED/Value`, unit: "%" },
-			{ name: "movementspeed", type: "range", label: "Movement Speed", min: 0, max: 100, default: 0.0, defaultstep: 1, path: `LAYER #/MOVEMENT SPEED/Value`, unit: "%" },
+			{ name: "movementspeed", type: "integer", label: "Movement Speed", min: 0, max: 100, default: 0.0, defaultstep: 1, path: `LAYER #/MOVEMENT SPEED/Value`, unit: "%" },
 			{ name: "tchour", type: "integer", label: "Timecode Hour", min: 0, max: 23, default: 0.0, defaultstep: 1, path: `LAYER #/MTC HOUR/Value`, unit: "hr" },
 			{ name: "tcminute", type: "integer", label: "Timecode Minute", min: 0, max: 59, default: 0.0, defaultstep: 1, path: `LAYER #/MTC MINUTE/Value`, unit: "min" },
 			{ name: "tcsecond", type: "integer", label: "Timecode Second", min: 0, max: 59, default: 0.0, defaultstep: 1, path: `LAYER #/MTC SECOND/Value`, unit: "sec" },
@@ -89,9 +89,47 @@ class HiveBeebladeInstance extends InstanceBase {
 			{ name: "volume", type: "range", label: "Volume", min: 0, max: 100, default: 1.0, defaultstep: 10, path: `LAYER #/VOLUME/Value`, unit: "%" },
 			{
 				name: "frameblending", type: "select", label: "Frame Blending", options: [
-					{ value: 0, label: "Enabled" },
-					{ value: 1, label: "Disabled" }
+					{ value: 0, label: "Disabled" },
+					{ value: 1, label: "Enabled" }
 				], default: 1.0, path: `LAYER #/FRAME BLENDING/Value`, unit: ""
+			},
+			{ name: "transitionduration", type: "integer", label: "Transition Duration", min: 0, max: 65535, default: 0, defaultstep: 10, path: `LAYER #/TRANSITION DURATION/Value`, unit: "ms" },
+			{
+				name: "transitionmode", type: "select", label: "Transition Mode", options: [
+					{ value: 0, label: "Alpha" },
+					{ value: 1, label: "Additive" },
+					{ value: 2, label: "Multiply" },
+					{ value: 3, label: "Difference" },
+					{ value: 4, label: "Screen" },
+					{ value: 5, label: "Preserve Luma" },
+					{ value: 6, label: "Rectangle Wipe" },
+					{ value: 7, label: "Triangle Wipe" },
+					{ value: 8, label: "Minimum" },
+					{ value: 9, label: "Maximum" },
+					{ value: 10, label: "Subtract" },
+					{ value: 11, label: "Darken" },
+					{ value: 12, label: "Lighten" },
+					{ value: 13, label: "Soft Lighten" },
+					{ value: 14, label: "Dark Lighten" },
+					{ value: 15, label: "Exclusion" },
+					{ value: 16, label: "Random" },
+					{ value: 17, label: "Ripple" },
+					{ value: 18, label: "Threshold" },
+					{ value: 19, label: "Sine" },
+					{ value: 20, label: "Invert Mask" },
+					{ value: 21, label: "Noise" },
+					{ value: 22, label: "Swirl" },
+					{ value: 23, label: "Gradient" },
+					{ value: 24, label: "Pixel Sort" },
+					{ value: 25, label: "Checkerboard" },
+					{ value: 26, label: "Pulse" },
+					{ value: 27, label: "Hue Shift" },
+					{ value: 28, label: "Fractal" },
+					{ value: 29, label: "Waveform" },
+					{ value: 30, label: "RGB Split" },
+					{ value: 31, label: "Glitch" }
+
+				], default: 0, path: `LAYER #/TRANSITION MODE/Value`, unit: ""
 			},
 		];
 	}
@@ -250,21 +288,21 @@ class HiveBeebladeInstance extends InstanceBase {
 
 	valueFromNormalised(parameter, normalizedvalue) {
 		if (parameter.name == "scale") {
-			return CalculateScaleFromNormalised(normalizedvalue);
+			return this.calculateScaleFromNormalised(normalizedvalue);
 		} else if (parameter.name == "playspeed") {
-			return CalculatePlaySpeedFromNormalised(normalizedvalue);
+			return this.calculatePlaySpeedFromNormalised(normalizedvalue);
 		} else {
-			return ParameterValueFromNormalised(parameter.min, parameter.max, normalizedvalue);
+			return this.parameterValueFromNormalised(parameter.min, parameter.max, normalizedvalue);
 		}
 	}
 
 	normalisedValue(parameter, value) {
 		if (parameter.name == "scale") {
-			return NormalizeScaleFromValue(value);
+			return this.normalizeScaleFromValue(value);
 		} else if (parameter.name == "playspeed") {
-			return NormalizePlaySpeedFromValue(value);
+			return this.normalizePlaySpeedFromValue(value);
 		} else {
-			return NormalizeParameterValue(parameter.min, parameter.max, value);
+			return this.normalizeParameterValue(parameter.min, parameter.max, value);
 		}
 	}
 
