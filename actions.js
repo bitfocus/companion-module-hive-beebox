@@ -410,14 +410,12 @@ module.exports = function (self) {
 					{
 						id: 'transitionduration',
 						type: 'number',
-						label: 'Value (Milliseconds)',
+						label: 'Set Transition Duration In Milliseconds',
 						default: 0,
 						min: 0,
 						max: 65535,
-						isVisibleData: self.paramDescriptors,
 						isVisible: (options, data) => {
-							let par = data.find((param) => param.name === options.parameter)
-							let show = par.type === 'integer' && par.min === 0 && par.max === 65535
+							let show = options.parameter === 'transitionduration' || options.parameter === 'file'
 							return show
 						}
 					},
@@ -500,7 +498,7 @@ module.exports = function (self) {
 						choices: transitionmodeOptions,
 						default: 0,
 						isVisible: (options, data) => {
-							let show = options.parameter === 'transitionmode'
+							let show = options.parameter === 'transitionmode' || options.parameter === 'file'
 							return show
 						}
 					},
@@ -586,10 +584,20 @@ module.exports = function (self) {
 
 					// now finally actually set the value
 					if (self.localSVPatch.connected) {
+						if (par.name === 'file') {
+							let transitiondurationpath = self.paramDescriptors.find((param) => param.name === 'transitionduration').path
+							let transitionmodepath = self.paramDescriptors.find((param) => param.name === 'transitionmode').path
+							transitiondurationpath = transitiondurationpath.replace('#', layer)
+							transitionmodepath = transitionmodepath.replace('#', layer)
+							self.localSVPatch.SetPatchDouble(transitiondurationpath, action.options.transitionduration)
+							self.localSVPatch.SetPatchDouble(transitionmodepath, action.options.transitionmode)
+							self.localSVPatch.SetPatchDouble(path, outVal)
+						}
+					} else {
 						self.localSVPatch.SetPatchDouble(path, outVal)
 					}
 				}
-			},
+			}
 		},
 	)
 }
