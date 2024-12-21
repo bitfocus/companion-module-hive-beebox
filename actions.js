@@ -265,16 +265,30 @@ module.exports = function (self) {
 						default: 'playlist'
 					},
 					{
-						id: 'instructions1',
+						id: 'instructions0',
 						type: 'static-text',
 						label: 'Instructions:',
-						value: 'To set the data for a module in Hive you need to enter the data that you want to set in the text box below. This must be in JSON format and be formatted correctly for the module that it is intended for. The easiest way to get this data is to export the settings from the appropriate module (by clicking export in the appropriate tab in the GUI) and then copying the contents of the downloaded file into the text box below.'
+						value: 'To set the data for a module in Hive you need to enter the data that you want to set in the text box below. This must be in JSON format and be formatted correctly for the module that it is intended for. This can be done in one of 2 ways :'
+
+					},
+					{
+						id: 'instructions1',
+						type: 'static-text',
+						label: 'Learn The Data:',
+						value: 'The easiest way to get this data is to create the playlist / timeline/schedule/timecode cue list in the device and then press the "Learn" button in this panel, that will grab the data from the device and store it in this action, you can then change the settings on the device and learn those to another action etc..'
+
+					},
+					{
+						id: 'instructions1',
+						type: 'static-text',
+						label: 'Get Data From Export:',
+						value: 'The other way to get this data is to export the settings from the appropriate module (by clicking export in the appropriate tab in the GUI) and then copying the contents of the downloaded file into the text box below.'
 
 					},
 					{
 						id: 'instructions2',
 						type: 'static-text',
-						label: 'Playlist Example:',
+						label: 'Export Example:',
 						value: 'If you want to load a playlist, create the playlist in the playlist tab in the Hive GUI, then click export in the top right - this will download a file called Hive_Playlist.json, now open this file in a text editor and copy all the contents to the clipboard, finally paste that content into the box below. Whenever you activate this action that playlist will get loaded into the playlist module.'
 
 					},
@@ -287,6 +301,32 @@ module.exports = function (self) {
 					}
 
 				],
+				learn: (action) => {
+					if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry) {
+						self.log('error', "Missing data, please check connection")
+						return false
+					}
+
+					let newData = {}
+					switch (action.options.module) {
+						case 'playlist':
+							newData = JSON.stringify(self.blade.playlist)
+							break
+						case 'timeline':
+							newData = JSON.stringify(self.blade.timeline)
+							break
+						case 'timecode':
+							newData = JSON.stringify(self.blade.timecode)
+							break
+						case 'scheduler':
+							newData = JSON.stringify(self.blade.schedule)
+							break
+					}
+					return {
+						...action.options,
+						data: newData
+					}
+				},
 				callback: async (event, context) => {
 					self.log('info', "Loading data for module, module=" + event.options.module)
 					if (event.options.data === '') { self.log('error', "No data provided"); return }
