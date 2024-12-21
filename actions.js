@@ -291,17 +291,26 @@ module.exports = function (self) {
 					self.log('info', "Loading data for module, module=" + event.options.module)
 					if (event.options.data === '') { self.log('error', "No data provided"); return }
 
+					let dataObj = {}
+					try {
+						dataObj = JSON.parse(event.options.data);
+					} catch (e) {
+						self.log('error', "Data is not valid JSON")
+						return false;
+					}
+
 					switch (event.options.module) {
 						case 'playlist':
-							self.localSVPatch.SetPatchJSON("/Play List", event.options.data)
+							self.localSVPatch.SetPatchJSON("/Play List", dataObj)
 							break
 						case 'timeline':
-
+							self.localSVPatch.SetPatchJSON("/Timeline", dataObj)
 							break
 						case 'timecode':
-
+							self.localSVPatch.SetPatchJSON("/Timecode Cue List", dataObj)
 							break
 						case 'scheduler':
+							self.localSVPatch.SetPatchJSON("/Schedule", dataObj)
 							break
 
 					}
