@@ -399,6 +399,55 @@ class HiveBeebladeInstance extends InstanceBase {
 		if (this.localSVPatch.connected)
 			this.localSVPatch.UpdatePatchJSON("/Screenberry WB Settings", [{ "op": "replace", "path": "/calibrationMode", "value": enable ? 1 : 0 }])
 	}
+
+	async customCommandToDevice(cmdStr, ip) {
+		if (!ip) return;
+
+		if (cmdStr === "")
+			return;
+
+		if (cmdStr.includes("GetPatch") || cmdStr.includes("SetPatch") || cmdStr.includes("UpdatePatch")) {
+			try {
+				var completeCmdStr = `this.localSVPatch.` + cmdStr;
+				this.log("info", "Running : " + completeCmdStr);
+				eval(completeCmdStr);
+			} catch (err) {
+				this.log("error", "Error calling custom command api call on " + ip + " : " + err);
+				console.log(err);
+			}
+		}
+		else {
+			this.postSystemCommandToDevice(cmdStr, ip);
+		}
+	}
+
+	async postSystemCommandToDevice(cmdStr, ip) {
+		if (!ip) return;
+		try {
+			let jsParams = {};
+			let targetAPICommand = 'http://' + ip + '/api/runSystemCommand';
+			let rtnJson = await fetch(targetAPICommand,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						"method": "Nectar_run_command",
+						"cmd": cmdStr
+					}),
+					headers: { "Content-Type": "application/json" }
+				});
+
+			if (rtnJson.cmdExecutedOK) {
+				this.log("info", "Command " + cmdStr + "executed OK on " + ip);
+			}
+			else {
+				this.log("error", "Command " + cmdStr + "executed but Failed on " + ip);
+			}
+		}
+		catch (err) {
+			this.log("error", "Error calling run command api call on " + ip + " : " + err);
+			console.log(err);
+		}
+	}
 }
 
 runEntrypoint(HiveBeebladeInstance, UpgradeScripts)

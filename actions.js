@@ -704,7 +704,32 @@ module.exports = function (self) {
 						self.localSVPatch.SetPatchDouble(path, outVal)
 					}
 				}
-			}
+			},
+			sendcommand: {
+				name: 'Send Command',
+				options: [
+					{
+						id: 'instructions0',
+						type: 'static-text',
+						label: 'Instructions:',
+						value: 'This action allows you to send a command to the Hive device, this can either be a data command using one of the data update functions (SetPatchDouble, SetPatchString, SetPatchJSON etc...) details of which can be found in the UDP Command List on our website, or a linux shell command that will be executed on the device directly.'
+
+					},
+					{
+						id: 'command',
+						type: 'textinput',
+						label: 'Enter command text here:',
+						required: true,
+						default: ''
+					}
+
+				],
+				callback: async (event, context) => {
+					self.log('info', "Sending device command, command=" + event.options.command)
+					if (event.options.ip === '') { self.log('error', "No valid command provided"); return }
+					self.customCommandToDevice(event.options.command, self.config.ip);
+				},
+			},
 		},
 	)
 }
