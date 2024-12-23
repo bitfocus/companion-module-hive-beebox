@@ -730,6 +730,197 @@ module.exports = function (self) {
 					self.customCommandToDevice(event.options.command, self.config.ip);
 				},
 			},
+			playlistaction: {
+				name: 'Playlist Action',
+				options: [
+					{
+						id: 'action',
+						type: 'dropdown',
+						label: 'Select action:',
+						choices: [
+							{ id: "playnext", label: "Play Next" },
+							{ id: "playprevious", label: "Play Previous" },
+							{ id: "playrandom", label: "Play Random" },
+							{ id: "playfirst", label: "Play First" },
+							{ id: "playlast", label: "Play Last" },
+							{ id: "playrowx", label: "Play Row [parameter]" },
+							{ id: "pause", label: "Pause" },
+							{ id: "play", label: "Play" },
+							{ id: "nextmarker", label: "Goto Next Marker" },
+							{ id: "previousmarker", label: "Goto Previous Marker" },
+							{ id: "randommarker", label: "Goto Random Marker" },
+							{ id: "firstmarker", label: "Goto First Marker" },
+							{ id: "lastmarker", label: "Goto Last Marker" },
+							{ id: "markerx", label: "Goto Marker [parameter]" }
+						],
+						default: 'playnext'
+					},
+					{
+						id: 'parameter',
+						type: 'number',
+						label: 'Parameter',
+						default: 0,
+						min: 0,
+						max: 1000,
+						isVisible: (options, data) => {
+							let show = options.action === 'playrowx' || options.action === 'markerx'
+							return show
+						}
+					},
+
+				],
+				callback: async (event, context) => {
+					self.log('info', "Sending playlist command, command=" + event.options.action)
+
+					let thePlaylist = self.blade.playlist;
+					let currentrow = self.blade.playlistrow;
+					if (!thePlaylist) {
+						self.log('error', "No playlist loaded")
+						return
+					}
+
+					switch (event.options.action) {
+
+						case "playnext":
+							if (thePlaylist.list.length < 2) return;
+							let next = (currentrow + 1) % thePlaylist.list.length;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, next);
+							break;
+
+						case "playprevious":
+							if (thePlaylist.list.length < 2) return;
+							let previous = (currentrow - 1);
+							if (previous < 0) previous = thePlaylist.list.length - 1;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, previous);
+							break;
+
+						case "playfirst":
+							if (thePlaylist.list.length < 2) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, 0);
+							break;
+
+						case "playlast":
+							if (thePlaylist.list.length < 2) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, thePlaylist.list.length - 1);
+							break;
+
+						case "playrandom":
+							if (thePlaylist.list.length < 2) return;
+							let random = self.getRandomInt(0, thePlaylist.list.length - 1);
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, random);
+							break;
+
+						case "playrowx":
+							if (thePlaylist.list.length < 2) return;
+							let x = parseInt(event.options.parameter);
+							if (x > thePlaylist.list.length || x < 1) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Next`, x - 1);
+							break;
+
+						case "pause":
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play Mode Next`, 0);
+							break;
+
+						case "play":
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play Mode Next`, 1);
+							break;
+
+						case "nextmarker":
+							if (thePlaylist.markers.length < 2) return;
+
+							thePlaylist.markers.sort(function (a, b) { return a.time - b.time; });
+
+							var filename = "";
+
+							if (thePlaylist.list.length > 0)
+								filename = thePlaylist.list[currentrow].name;
+
+							if (filename.substring(filename.length - 4) === ".htl") {
+								self.localSVPatch.GetPatchDouble(`/Timeline Patch/TimelineManager/Playhead Time`, (time) => {
+									let currentTime = self.calculatePlayheadTime(thePlaylist, currentrow, time);
+
+									let filtered = thePlaylist.markers.filter((m) => m.time > currentTime);
+									if (filtered.length > 0) {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, filtered[0].time);
+									} else {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[0].time);
+									}
+								});
+							}
+							else {
+								self.localSVPatch.GetPatchDouble(`/Playlist Control/Playlist Controller 1/Time Since Media Advance`, (time) => {
+									let currentTime = self.calculatePlayheadTime(thePlaylist, currentrow, time);
+
+									let filtered = thePlaylist.markers.filter((m) => m.time > currentTime);
+									if (filtered.length > 0) {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, filtered[0].time);
+									} else {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[0].time);
+									}
+								});
+							}
+							break;
+						case "previousmarker":
+							if (thePlaylist.markers.length < 2) return;
+
+							thePlaylist.markers.sort(function (a, b) { return a.time - b.time; });
+
+							var filename = "";
+
+							if (thePlaylist.list.length > 0)
+								filename = thePlaylist.list[currentrow].name;
+
+							if (filename.substring(filename.length - 4) === ".htl") {
+								self.localSVPatch.GetPatchDouble(`/Timeline Patch/TimelineManager/Playhead Time`, (time) => {
+									let currentTime = self.calculatePlayheadTime(thePlaylist, currentrow, time);
+
+									let filtered = thePlaylist.markers.filter((m) => m.time < currentTime);
+									if (filtered.length > 0) {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, filtered[filtered.length - 1].time);
+									} else {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[thePlaylist.markers.length - 1].time);
+									}
+								});
+							}
+							else {
+								self.localSVPatch.GetPatchDouble(`/Playlist Control/Playlist Controller 1/Time Since Media Advance`, (time) => {
+									let currentTime = self.calculatePlayheadTime(thePlaylist, currentrow, time);
+
+									let filtered = thePlaylist.markers.filter((m) => m.time < currentTime);
+									if (filtered.length > 0) {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, filtered[filtered.length - 1].time);
+									} else {
+										self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[thePlaylist.markers.length - 1].time);
+									}
+								});
+							}
+							break;
+						case "randommarker":
+							if (thePlaylist.markers.length < 2) return;
+							let markerrandom = self.getRandomInt(0, thePlaylist.markers.length - 1);
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[markerrandom].time);
+							break;
+
+						case "firstmarker":
+							if (thePlaylist.markers.length < 1) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[0].time);
+							break;
+
+						case "lastmarker":
+							if (thePlaylist.markers.length < 1) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[thePlaylist.markers.length - 1].time);
+							break;
+
+						case "markerx":
+							if (thePlaylist.markers.length < 1) return;
+							let xm = parseInt(event.options.parameter);
+							if (xm > thePlaylist.markers.length || xm < 1) return;
+							self.localSVPatch.SetPatchDouble(`/Playlist Control/Playlist Controller 1/Play List Seek`, thePlaylist.markers[xm - 1].time);
+							break;
+					}
+
+				},
+			},
 		},
 	)
 }

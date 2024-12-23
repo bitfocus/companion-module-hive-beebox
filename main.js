@@ -142,7 +142,8 @@ class HiveBeebladeInstance extends InstanceBase {
 			timecode: null,
 			schedule: null,
 			screenberry: null,
-			vioso: null
+			vioso: null,
+			playlistrow: 0
 		}
 		this.initializePatch(config.ip)
 		this.updateActions() // export actions
@@ -346,6 +347,12 @@ class HiveBeebladeInstance extends InstanceBase {
 			this.log('debug', 'Updated Screenberry Data = ' + JSON.stringify(this.blade.screenberry))
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
+
+		this.localSVPatch.WatchPatchDouble("/Playlist Control/Playlist Controller 1/Row Index", (r) => {
+			console.log("Reading playlist row");
+			this.blade.playlistrow = r;
+
+		});
 	}
 
 
@@ -447,6 +454,58 @@ class HiveBeebladeInstance extends InstanceBase {
 			this.log("error", "Error calling run command api call on " + ip + " : " + err);
 			console.log(err);
 		}
+	}
+
+	// utility function to generate a random number
+	getRandomInt(min, max) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	calculatePlayheadTime(playlist, currentRowIndex, timeincurrent) {
+		if (currentRowIndex >= 0 && currentRowIndex < playlist.list.length) {
+			var sumPreviousMediaLength = 0.0;
+
+			for (var i = 0; i < currentRowIndex; i++) {
+				var duration = this.GetMediaFileDuration(playlist, i);
+				sumPreviousMediaLength += parseFloat(duration);
+
+				if (playlist.transitionDuration > 0.0)
+					sumPreviousMediaLength -= playlist.transitionDuration;
+			}
+
+			var playHeadTime = sumPreviousMediaLength + timeincurrent;
+
+			return playHeadTime;
+		}
+	}
+
+	GetMediaFileDuration(playlist, iList) {
+		if (playlist.list[iList].followAction >= 8 &&
+			playlist.list[iList].followAction < 15) {
+			return playlist.list[iList].num;
+		}
+
+		return playlist.list[iList].duration;
+	}
+
+	CalculatePlayListDuration(playlist) {
+		var duration = 0.0;
+
+		for (var i = 0; i < playlist.list.length; i++) {
+			var filename = playlist.list[i].name;
+
+			duration += this.GetMediaFileDuration(i);
+		}
+
+		playListAutoTransitionMode = (typeof playlist.transitionDuration === "undefined" ||
+			playlist.transitionDuration === 0.0) ? false : true;
+
+		if (playListAutoTransitionMode)
+			duration -= (playlist.list.length - 1) * playlist.transitionDuration;
+
+		return duration;
 	}
 }
 
