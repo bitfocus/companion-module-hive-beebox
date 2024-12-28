@@ -232,9 +232,7 @@ class HiveBeebladeInstance extends InstanceBase {
 		UpdateVariableDefinitions(this)
 	}
 
-	///////////////////////Hive Functions ///////////////////////////
-
-
+	////////////////////// Hive Functions /////////////////////////////
 
 	normalizeScaleFromValue(scale) {
 		let newVal = 0.0;
@@ -315,42 +313,67 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.localSVPatch.WatchPatchJSON("/Play List", (playlist) => {
 			this.blade.playlist = playlist
 			this.log('debug', 'Updated PlaylistData = ' + JSON.stringify(this.blade.playlist))
+			this.setVariableValues({
+				'playlistenabled': this.blade.playlist.usePlayList,
+				'playlistrowcount': this.blade.playlist.list.length
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Timeline", (timeline) => {
 			this.blade.timeline = timeline
 			this.log('debug', 'Updated TimelineData = ' + JSON.stringify(this.blade.timeline))
+			this.setVariableValues({
+				'timelineenabled': this.blade.timeline.useTimeline
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Schedule", (schedule) => {
 			this.blade.schedule = schedule
 			this.log('debug', 'Updated ScheduleData = ' + JSON.stringify(this.blade.schedule))
+			this.setVariableValues({
+				'scheduleenabled': this.blade.schedule.useSchedule
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Timecode Cue List", (timecode) => {
 			this.blade.timecode = timecode
 			this.log('debug', 'Updated Timecode Cue List Data = ' + JSON.stringify(this.blade.timecode))
+			this.setVariableValues({
+				'l1timecodeenabled': this.blade.timecode.layers[0].useCueList,
+				'l2timecodeenabled': this.blade.timecode.layers[1].useCueList
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Vioso WB Settings", (vioso) => {
 			this.blade.vioso = vioso
 			this.log('debug', 'Updated Vioso Data = ' + JSON.stringify(this.blade.vioso))
+			this.setVariableValues({
+				'visioenabled': this.blade.vioso.enabled,
+				'viosoconfigmode': this.blade.vioso.calibrationMode
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Screenberry WB Settings", (screenberry) => {
 			this.blade.screenberry = screenberry
 			this.log('debug', 'Updated Screenberry Data = ' + JSON.stringify(this.blade.screenberry))
+			this.setVariableValues({
+				'screenberryenabled': this.blade.screenberry.enabled,
+				'screenberryconfigmode': this.blade.screenberry.calibrationMode
+			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
 		})
 
 		this.localSVPatch.WatchPatchDouble("/Playlist Control/Playlist Controller 1/Row Index", (r) => {
 			console.log("Reading playlist row");
 			this.blade.playlistrow = r;
+			this.setVariableValues({
+				'playlistcurrentrow': r + 1
+			})
 
 		});
 	}
