@@ -11,6 +11,7 @@ class HiveBeebladeInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 		this.localSVPatch = new SVRemotePatch(this);
+		this.updateTimer = null;
 		// array of parameter descriptor objects
 		// info calculated from HiveBuzzParameters.js on Hive Device version 1.0.308
 		this.paramDescriptors = [
@@ -143,12 +144,15 @@ class HiveBeebladeInstance extends InstanceBase {
 			schedule: null,
 			screenberry: null,
 			vioso: null,
-			playlistrow: 0
+			playlistrow: 0,
+			tiles: null
 		}
-		this.initializePatch(config.ip)
+
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
+		this.initializePatch(config.ip)
+
 	}
 
 	initializePatch(ip) {
@@ -184,10 +188,21 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.log('debug', 'Connecting to ' + ip)
 
 		this.localSVPatch.connectTo('ws://' + ip + ':9002');
+
+		if (this.updateTimer) {	// clear the timer
+			clearInterval(this.updateTimer);
+			this.updateTimer = null;
+		}
+
+		this.updateTimer = setInterval(this.updateDeiceInfo.bind(this), 2000);
 	}
 	// When module gets deleted
 	async destroy() {
 		this.log('debug', 'destroy')
+		if (this.updateTimer) {	// clear the timer
+			clearInterval(this.updateTimer);
+			this.updateTimer = null;
+		}
 		if (this.localSVPatch.connected) {
 			this.localSVPatch.disconnect()
 		}
@@ -433,6 +448,8 @@ class HiveBeebladeInstance extends InstanceBase {
 	async customCommandToDevice(cmdStr, ip) {
 		if (!ip) return;
 
+		if (!this.localSVPatch.connected) return;
+
 		if (cmdStr === "")
 			return;
 
@@ -529,6 +546,54 @@ class HiveBeebladeInstance extends InstanceBase {
 			duration -= (playlist.list.length - 1) * playlist.transitionDuration;
 
 		return duration;
+	}
+
+	async updateDeiceInfo() {
+		// return if not connected to the device
+		if (!this.localSVPatch.connected) return;
+
+		// get the tile list from the server
+		let tileList = await this.GetTileListFromServer();
+		if (tileList == null) {
+			this.log("error", "Failed to get tile list from server");
+			return;
+		}
+		this.blade.tiles = tileList;
+
+		let isQueen = this.blade.tiles.tileList[0].beeType === 1
+
+		this.setVariableValues(
+			{
+				'softwareversion': this.blade.tiles.hiveVersion,
+				'nummediafiles': this.blade.tiles.tileList[0].nFiles,
+				'beetype': isQueen ? "Queen" : "Worker",
+				'devicename': this.blade.tiles.tileList[0].deviceName,
+				'remainingstorage': Math.ceil(this.blade.tiles.tileList[0].osSpace / 1024 / 1024 / 1024),
+				'numworkers': isQueen ? this.blade.tiles.tileList.length - 1 : 0,
+				'status': this.blade.tiles.tileList[0].status
+			}
+		)
+	}
+
+	async GetTileListFromServer() {
+		var jsParams = {};
+
+		let tileList = await this.NectarAPICommand('/api/getTileList',
+			{ method: 'POST', body: JSON.stringify(jsParams) });
+		return tileList;
+	}
+
+	async NectarAPICommand(apiCommand, options, ipAddress = this.config.ip) {
+
+		try {
+			var targetAPICommand = 'http://' + ipAddress + apiCommand;
+			var result = await fetch(targetAPICommand, options);
+			return await result.json();
+		} catch (error) {
+			// Handle the error here
+			console.error(error);
+			return null;
+		}
 	}
 }
 

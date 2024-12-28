@@ -339,6 +339,11 @@ module.exports = function (self) {
 						return false;
 					}
 
+					if (self.localSVPatch.connected === false) {
+						self.log('error', "Not connected to device")
+						return
+					}
+
 					switch (event.options.module) {
 						case 'playlist':
 							self.localSVPatch.SetPatchJSON("/Play List", dataObj)
@@ -770,6 +775,11 @@ module.exports = function (self) {
 
 				],
 				callback: async (event, context) => {
+
+					if (self.localSVPatch.connected === false) {
+						self.log('error', "Not connected to device")
+						return
+					}
 					self.log('info', "Sending playlist command, command=" + event.options.action)
 
 					let thePlaylist = self.blade.playlist;
