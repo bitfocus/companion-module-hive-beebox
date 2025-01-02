@@ -2,6 +2,7 @@ const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@compani
 const UpgradeScripts = require('./upgrades')
 const UpdateActions = require('./actions')
 const UpdateFeedbacks = require('./feedbacks')
+const UpdatePresets = require('./presets')
 const UpdateVariableDefinitions = require('./variables')
 const SVRemotePatch = require('./hive/SVRemotePatchNodeJS');
 
@@ -151,6 +152,7 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.updateActions() // export actions
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
+		this.updatePresets() // export presets
 		this.initializePatch(config.ip)
 
 	}
@@ -241,6 +243,10 @@ class HiveBeebladeInstance extends InstanceBase {
 
 	updateFeedbacks() {
 		UpdateFeedbacks(this)
+	}
+
+	updatePresets() {
+		UpdatePresets(this)
 	}
 
 	updateVariableDefinitions() {
@@ -389,7 +395,7 @@ class HiveBeebladeInstance extends InstanceBase {
 			this.setVariableValues({
 				'playlistcurrentrow': r + 1
 			})
-
+			this.checkFeedbacks('playbackrow')
 		});
 	}
 

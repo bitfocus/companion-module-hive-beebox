@@ -55,7 +55,7 @@ module.exports = async function (self) {
 						return self.blade.vioso.calibrationMode === 0
 				}
 			},
-		}, // Add a comma here
+		},
 		moduleenabled: {
 			name: 'Module Enabled',
 			type: 'boolean',
@@ -109,6 +109,6 @@ module.exports = async function (self) {
 						return self.blade.vioso.calibrationMode === 1
 				}
 			},
-		},
+		}
 	})
 }
