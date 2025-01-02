@@ -395,7 +395,6 @@ class HiveBeebladeInstance extends InstanceBase {
 			this.setVariableValues({
 				'playlistcurrentrow': r + 1
 			})
-			this.checkFeedbacks('playbackrow')
 		});
 	}
 
