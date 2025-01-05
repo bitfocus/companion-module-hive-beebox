@@ -146,7 +146,8 @@ class HiveBeebladeInstance extends InstanceBase {
 			screenberry: null,
 			vioso: null,
 			playlistrow: 0,
-			tiles: null
+			tiles: null,
+			mapping: null
 		}
 
 		this.updateActions() // export actions
@@ -357,6 +358,12 @@ class HiveBeebladeInstance extends InstanceBase {
 				'scheduleenabled': this.blade.schedule.useSchedule
 			})
 			this.checkFeedbacks('moduledisabled', 'moduleenabled')
+		})
+
+		this.localSVPatch.WatchPatchJSON("/Output Mapping", (mapping) => {
+			this.blade.mapping = mapping
+			this.log('debug', 'Updated MappingData = ' + JSON.stringify(this.blade.mapping))
+
 		})
 
 		this.localSVPatch.WatchPatchJSON("/Timecode Cue List", (timecode) => {

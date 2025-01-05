@@ -931,6 +931,60 @@ module.exports = function (self) {
 
 				},
 			},
+			regionmedia: {
+				name: 'Set Region Media',
+				options: [
+					{
+						id: 'instructions0',
+						type: 'static-text',
+						label: 'Instructions:',
+						value: 'This action allows you to set the media that is played inside a media file region, the region must be set as a Media File region in the mapping tab of the Hive GUI. The media file must be present in the media folder on the device. The media file name should be exactly the same as the full filename shown in media manager (including underscores) and is case sensitive. The region name should match exactly the region name displayed in the Hive GUI and is also case sensitive'
+
+					},
+					{
+						id: 'regionname',
+						type: 'textinput',
+						label: 'Enter name of region here:',
+						required: true,
+						default: ''
+					},
+					{
+						id: 'mediafile',
+						type: 'textinput',
+						label: 'Enter media filename in full here:',
+						required: true,
+						default: ''
+					}
+
+				],
+				callback: async (event, context) => {
+					if (self.localSVPatch.connected === false) {
+						self.log('error', "Not connected to device")
+						return
+					}
+					self.log('info', "Setting media on region:" + event.options.regionname + " to " + event.options.mediafile)
+
+					let map = self.blade.mapping
+
+					let regionIndex = map.regions.findIndex((region) => region.name === event.options.regionname)
+					if (regionIndex === -1) {
+						self.log('error', "Region not found")
+						return
+					}
+					let region = map.regions[regionIndex]
+					if (region.source !== 'mediaFile') {
+						self.log('error', "Region is not a media file region")
+						return
+					}
+
+					region.mediaFilename = event.options.mediafile
+
+					map.regions[regionIndex] = region
+
+					//self.localSVPatch.SetPatchJSON("/Output Mapping", map)
+					self.localSVPatch.SetPatchString("/Mapping/RegionPatches/" + event.options.regionname + "/mediaFilename/Text", event.options.mediafile)
+				},
+			},
 		},
 	)
 }
