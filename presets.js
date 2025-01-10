@@ -1,7 +1,8 @@
 const { combineRgb } = require('@companion-module/base')
 
 module.exports = async function (self) {
-    self.setPresetDefinitions({
+
+    let presets = {
 
         // enable disable modules
         enableplaylist: {
@@ -562,6 +563,104 @@ module.exports = async function (self) {
             ],
         },
 
+        l1black: {
+            type: 'button',
+            category: 'Layer 1 Clip Selection',
+            name: 'Black',
+            style: {
 
-    })
+                bgcolor: combineRgb(0, 0, 180),
+                color: combineRgb(255, 255, 255),
+                text: 'BLACK',
+                size: '14'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'setparameter',
+                            options: {
+                                parameter: 'file',
+                                layer: '1',
+                                int1000: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+        l12lack: {
+            type: 'button',
+            category: 'Layer 2 Clip Selection',
+            name: 'Black',
+            style: {
+
+                bgcolor: combineRgb(0, 0, 180),
+                color: combineRgb(255, 255, 255),
+                text: 'BLACK',
+                size: '14'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'setparameter',
+                            options: {
+                                parameter: 'file',
+                                layer: '2',
+                                int1000: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+
+    }
+    for (let layer = 1; layer < 3; layer++) {
+        for (let clip = 1; clip < 101; clip++) {
+            presets['l' + layer + 'clip' + clip] = {
+                type: 'button',
+                category: `Layer ${layer} Clip Selection`,
+                name: `File ${clip}`,
+                style: {
+
+                    bgcolor: combineRgb(0, 0, 180),
+                    color: combineRgb(255, 255, 255),
+                    text: `FILE\n${clip}`,
+                    size: '14'
+                },
+                steps: [
+                    {
+                        down: [
+                            {
+                                actionId: 'setparameter',
+                                options: {
+                                    parameter: 'file',
+                                    layer: `${layer}`,
+                                    int1000: clip
+                                }
+                            }
+
+                        ],
+                        up: [
+
+                        ],
+                    },
+                ],
+                feedbacks: [],
+            }
+        }
+    }
+    self.setPresetDefinitions(presets)
 }
