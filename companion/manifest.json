@@ -5,8 +5,8 @@
 	"description": "hive-beeblade controller",
 	"version": "1.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-hive-beeblade.git",
-	"bugs": "https://github.com/bitfocus/companion-module-hive-beeblade/issues",
+	"repository": "git+https://github.com/noodles4694/companion-module-hive-beebox",
+	"bugs": "https://github.com/noodles4694/companion-module-hive-beebox/issues",
 	"maintainers": [
 		{
 			"name": "Nigel Sadler",
