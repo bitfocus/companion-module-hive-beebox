@@ -261,7 +261,8 @@ module.exports = function (self) {
 							{ id: 'timeline', label: 'Timeline' },
 							{ id: 'timecode', label: 'Timecode Cue List' },
 							{ id: 'scheduler', label: 'Scheduler' },
-							{ id: 'mapping', label: 'Mapping' }
+							{ id: 'mapping', label: 'Mapping' },
+							{ id: 'settings', label: 'System Settings' }
 						],
 						default: 'playlist'
 					},
@@ -303,7 +304,7 @@ module.exports = function (self) {
 
 				],
 				learn: (action) => {
-					if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry) {
+					if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry || !self.blade.settings || !self.blade.mapping) {
 						self.log('error', "Missing data, please check connection")
 						return false
 					}
@@ -324,6 +325,9 @@ module.exports = function (self) {
 							break
 						case 'mapping':
 							newData = JSON.stringify(self.blade.mapping)
+							break
+						case 'settings':
+							newData = JSON.stringify(self.blade.settings)
 							break
 					}
 					return {
@@ -363,6 +367,9 @@ module.exports = function (self) {
 							break
 						case 'mapping':
 							self.localSVPatch.SetPatchJSON("/Output Mapping", dataObj)
+							break
+						case 'mapping':
+							self.localSVPatch.SetPatchJSON("/System Settings", dataObj)
 							break
 
 					}

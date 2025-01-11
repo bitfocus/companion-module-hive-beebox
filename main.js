@@ -147,7 +147,8 @@ class HiveBeebladeInstance extends InstanceBase {
 			vioso: null,
 			playlistrow: 0,
 			tiles: null,
-			mapping: null
+			mapping: null,
+			settings: null
 		}
 
 		this.updateActions() // export actions
@@ -363,6 +364,12 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.localSVPatch.WatchPatchJSON("/Output Mapping", (mapping) => {
 			this.blade.mapping = mapping
 			this.log('debug', 'Updated MappingData = ' + JSON.stringify(this.blade.mapping))
+
+		})
+
+		this.localSVPatch.WatchPatchJSON("/System Settings", (settings) => {
+			this.blade.settings = settings
+			this.log('debug', 'Updated Settings = ' + JSON.stringify(this.blade.settings))
 
 		})
 

@@ -65,7 +65,6 @@ module.exports = async function (self) {
             ],
             feedbacks: [],
         },
-
         enabletimecodel1: {
             type: 'button',
             category: 'Enable/Disable Modules',
@@ -126,7 +125,6 @@ module.exports = async function (self) {
             ],
             feedbacks: [],
         },
-
         enabletimecodel2: {
             type: 'button',
             category: 'Enable/Disable Modules',
@@ -187,8 +185,6 @@ module.exports = async function (self) {
             ],
             feedbacks: [],
         },
-
-
         enabletimeline: {
             type: 'button',
             category: 'Enable/Disable Modules',
@@ -249,7 +245,6 @@ module.exports = async function (self) {
             ],
             feedbacks: [],
         },
-
         enablescheduler: {
             type: 'button',
             category: 'Enable/Disable Modules',
@@ -311,7 +306,7 @@ module.exports = async function (self) {
             feedbacks: [],
         },
 
-
+        // toggle module states
         toggleplaylist: {
             type: 'button',
             category: 'Toggle Module State',
@@ -563,6 +558,38 @@ module.exports = async function (self) {
             ],
         },
 
+        // system commandas
+        restart: {
+            type: 'button',
+            category: 'System Commands',
+            name: 'Reboot',
+            style: {
+
+                bgcolor: combineRgb(0, 0, 180),
+                color: combineRgb(255, 255, 255),
+                text: 'REBOOT',
+                size: '14'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'sendcommand',
+                            options: {
+                                command: 'sudo systemctl reboot'
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+
+        // layer clip selections
         l1black: {
             type: 'button',
             category: 'Layer 1 Clip Selection',
@@ -625,7 +652,6 @@ module.exports = async function (self) {
             ],
             feedbacks: [],
         },
-
     }
     for (let layer = 1; layer < 3; layer++) {
         for (let clip = 1; clip < 101; clip++) {
