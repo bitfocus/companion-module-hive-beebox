@@ -1278,6 +1278,11 @@ path-scurry@^1.11.1:
 picocolors@^1.1.0:
   version "1.1.1"
 
+ping@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.npmjs.org/ping/-/ping-0.4.4.tgz"
+  integrity sha512-56ZMC0j7SCsMMLdOoUg12VZCfj/+ZO+yfOSjaNCRrmZZr6GLbN2X/Ui56T15dI8NhiHckaw5X2pvyfAomanwqQ==
+
 pkg-dir@^4.2.0:
   version "4.2.0"
   dependencies:

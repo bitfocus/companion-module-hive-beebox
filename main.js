@@ -11,7 +11,7 @@ ipRegex = '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0
 class HiveBeebladeInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
-		this.localSVPatch = new SVRemotePatch(this);
+		this.localSVPatch = null;
 		this.updateTimer = null;
 		// array of parameter descriptor objects
 		// info calculated from HiveBuzzParameters.js on Hive Device version 1.0.308
@@ -159,9 +159,16 @@ class HiveBeebladeInstance extends InstanceBase {
 
 	}
 
-	initializePatch(ip) {
+	async initializePatch(ip) {
 
 		//ip = "1.6.7";
+
+		if (this.localSVPatch) {
+			this.localSVPatch.disconnect();
+			this.localSVPatch = null;
+		}
+
+		this.localSVPatch = new SVRemotePatch(this);
 
 		if (!ip || ip === '') {
 			this.updateStatus(InstanceStatus.BadConfig, 'Missing device IP address');
@@ -171,10 +178,6 @@ class HiveBeebladeInstance extends InstanceBase {
 		if (!ip.match(new RegExp(ipRegex))) {
 			this.updateStatus(InstanceStatus.BadConfig, 'Invalid or missing IP address');
 			return;
-		}
-
-		if (this.localSVPatch.connected) {
-			this.localSVPatch.disconnect()
 		}
 
 		this.updateStatus(InstanceStatus.Connecting, 'Connecting');
@@ -191,7 +194,7 @@ class HiveBeebladeInstance extends InstanceBase {
 
 		this.log('debug', 'Connecting to ' + ip)
 
-		this.localSVPatch.connectTo('ws://' + ip + ':9002');
+		this.localSVPatch.connectTo(ip);
 
 		if (this.updateTimer) {	// clear the timer
 			clearInterval(this.updateTimer);
@@ -603,6 +606,7 @@ class HiveBeebladeInstance extends InstanceBase {
 	}
 
 	async NectarAPICommand(apiCommand, options, ipAddress = this.config.ip) {
+		if (!this.localSVPatch.connected) return;
 
 		try {
 			var targetAPICommand = 'http://' + ipAddress + apiCommand;
