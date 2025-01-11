@@ -1,4 +1,5 @@
 const { combineRgb } = require('@companion-module/base')
+// This is the main function that will be called by the module to set the presets
 
 module.exports = async function (self) {
 
@@ -589,6 +590,159 @@ module.exports = async function (self) {
             feedbacks: [],
         },
 
+        // PLaylist commands
+        playlistgo: {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: 'Go Next',
+            style: {
+
+                bgcolor: combineRgb(0, 204, 0),
+                color: combineRgb(255, 255, 255),
+                text: 'GO',
+                size: '32'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'playnext',
+                                parameter: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+        playlistback: {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: 'back',
+            style: {
+
+                bgcolor: combineRgb(204, 204, 0),
+                color: combineRgb(0, 0, 0),
+                text: 'BACK',
+                size: '24'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'playprevious',
+                                parameter: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+        playlistfirst: {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: 'restart',
+            style: {
+
+                bgcolor: combineRgb(204, 204, 0),
+                color: combineRgb(0, 0, 0),
+                text: 'RESET',
+                size: '18'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'playfirst',
+                                parameter: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+        playlistpause: {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: 'pause',
+            style: {
+
+                bgcolor: combineRgb(204, 204, 0),
+                color: combineRgb(0, 0, 0),
+                text: 'PAUSE',
+                size: '18'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'pause',
+                                parameter: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+        playlistplay: {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: 'play',
+            style: {
+
+                bgcolor: combineRgb(0, 204, 0),
+                color: combineRgb(0, 0, 0),
+                text: 'PLAY',
+                size: '18'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'play',
+                                parameter: 0
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
+        },
+
+
         // layer clip selections
         l1black: {
             type: 'button',
@@ -686,6 +840,39 @@ module.exports = async function (self) {
                 ],
                 feedbacks: [],
             }
+        }
+    }
+
+    for (let row = 1; row < 51; row++) {
+        presets['playlistrow' + row] = {
+            type: 'button',
+            category: 'Playlist Commands',
+            name: `Row ${row}`,
+            style: {
+
+                bgcolor: combineRgb(0, 0, 180),
+                color: combineRgb(255, 255, 255),
+                text: `PLAY\nROW\n${row}`,
+                size: '14'
+            },
+            steps: [
+                {
+                    down: [
+                        {
+                            actionId: 'playlistaction',
+                            options: {
+                                action: 'playrowx',
+                                parameter: row
+                            }
+                        }
+
+                    ],
+                    up: [
+
+                    ],
+                },
+            ],
+            feedbacks: [],
         }
     }
 
