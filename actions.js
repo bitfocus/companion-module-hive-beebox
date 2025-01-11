@@ -260,7 +260,8 @@ module.exports = function (self) {
 							{ id: 'playlist', label: 'Playlist' },
 							{ id: 'timeline', label: 'Timeline' },
 							{ id: 'timecode', label: 'Timecode Cue List' },
-							{ id: 'scheduler', label: 'Scheduler' }
+							{ id: 'scheduler', label: 'Scheduler' },
+							{ id: 'mapping', label: 'Mapping' }
 						],
 						default: 'playlist'
 					},
@@ -321,6 +322,9 @@ module.exports = function (self) {
 						case 'scheduler':
 							newData = JSON.stringify(self.blade.schedule)
 							break
+						case 'mapping':
+							newData = JSON.stringify(self.blade.mapping)
+							break
 					}
 					return {
 						...action.options,
@@ -356,6 +360,9 @@ module.exports = function (self) {
 							break
 						case 'scheduler':
 							self.localSVPatch.SetPatchJSON("/Schedule", dataObj)
+							break
+						case 'mapping':
+							self.localSVPatch.SetPatchJSON("/Output Mapping", dataObj)
 							break
 
 					}
