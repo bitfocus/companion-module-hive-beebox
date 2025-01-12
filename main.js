@@ -15,6 +15,8 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.localSVPatch = null;
 		this.updateTimer = null;
 		this.watchesConnected = false;
+		this.fetchController = new AbortController();
+		this.fetchSignal = this.fetchController.signal;
 		// array of parameter descriptor objects
 		// info calculated from HiveBuzzParameters.js on Hive Device version 1.0.308
 		this.paramDescriptors = [
@@ -204,11 +206,17 @@ class HiveBeebladeInstance extends InstanceBase {
 							this.log('debug', 'Ping successful');
 						} else {
 							this.log('debug', 'Ping failed');
+							this.fetchController.abort();
+							this.fetchController = new AbortController();
+							this.fetchSignal = this.fetchController.signal;
 							this.initializePatch(ip);
 						}
 					}, { timeout: 1 });
 				} catch (err) {
 					this.log('error', 'Ping failed');
+					this.fetchController.abort();
+					this.fetchController = new AbortController();
+					this.fetchSignal = this.fetchController.signal;
 					this.initializePatch(ip);
 				}
 			}, 5000)
@@ -221,6 +229,9 @@ class HiveBeebladeInstance extends InstanceBase {
 				clearInterval(this.pingTimer);
 				this.pingTimer = null;
 			}
+			this.fetchController.abort();
+			this.fetchController = new AbortController();
+			this.fetchSignal = this.fetchController.signal;
 			this.updateStatus(InstanceStatus.Disconnected, 'Disconnected');
 		});
 
@@ -242,6 +253,9 @@ class HiveBeebladeInstance extends InstanceBase {
 			clearInterval(this.updateTimer);
 			this.updateTimer = null;
 		}
+		this.fetchController.abort();
+		this.fetchController = new AbortController();
+		this.fetchSignal = this.fetchController.signal;
 		if (this.localSVPatch.connected) {
 			this.localSVPatch.disconnect()
 		}
@@ -634,7 +648,11 @@ class HiveBeebladeInstance extends InstanceBase {
 		var jsParams = {};
 
 		let tileList = await this.NectarAPICommand('/api/getTileList',
-			{ method: 'POST', body: JSON.stringify(jsParams) });
+			{
+				method: 'POST',
+				body: JSON.stringify(jsParams),
+				signal: this.fetchSignal
+			});
 		return tileList;
 	}
 
@@ -647,6 +665,7 @@ class HiveBeebladeInstance extends InstanceBase {
 			return await result.json();
 		} catch (error) {
 			// Handle the error here
+			let code = error.code
 			console.error(error);
 			return null;
 		}
