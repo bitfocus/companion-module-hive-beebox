@@ -194,19 +194,29 @@ class HiveBeebladeInstance extends InstanceBase {
 			this.updateStatus(InstanceStatus.Ok, 'Connected');
 			// get latest data
 			this.updateBlade();
+
+			// ping to check connection is still there every 5 seconds
 			this.pingTimer = setInterval(() => {
-				ping.sys.probe(ip, (isAlive) => {
-					if (isAlive) {
-						this.log('debug', 'Ping successful');
-					} else {
-						this.log('debug', 'Ping failed');
-						this.initializePatch(ip);
-					}
-				}, { timeout: 1 });
-			}, 3000);
+				this.log('debug', 'Pinging device');
+				try {
+					ping.sys.probe(ip, (isAlive) => {
+						if (isAlive) {
+							this.log('debug', 'Ping successful');
+						} else {
+							this.log('debug', 'Ping failed');
+							this.initializePatch(ip);
+						}
+					}, { timeout: 1 });
+				} catch (err) {
+					this.log('error', 'Ping failed');
+					this.initializePatch(ip);
+				}
+			}, 5000)
+
 		});
 
 		this.localSVPatch.SetOnDisconnectCallback(() => {
+			// disable ping timer as we have gracefully disconnected and will autoconnect
 			if (this.pingTimer) {
 				clearInterval(this.pingTimer);
 				this.pingTimer = null;

@@ -1,5 +1,4 @@
 const WebSocket = require('ws')
-const ping = require('ping');
 const util = require('util');
 var lastErrorTime = Date.now();
 
@@ -114,7 +113,6 @@ class SVRemotePatch {
         this.functionsCreated = false;
 
         this.handlers = {};
-        this.pingTimer = null;
 
         this.onConnectCallback = null;
         this.onDisconnectCallback = null;
@@ -132,47 +130,8 @@ class SVRemotePatch {
         this.onDisconnectCallback = disconnectCallback;
     }
 
-    tryPing() {
-        return;
-
-        this.parent.log('debug', 'Attempting to ping Hive Device');
-        try {
-            var cfg = {
-                timeout: 1,
-                // WARNING: -i 2 may not work in other platform like windows
-                extra: ['-i', '2'],
-            };
-            ping.sys.probe(this.ip, function (isAlive) {
-                if (isAlive) {
-                    this.parent.log('debug', 'Ping successful');
-                    return;
-                } else {
-                    this.parent.log('debug', 'Ping failed');
-                    if (this.connected) {
-                        this.webSocket.reconnect();
-                        // this.disconnect();
-                        // this.connectTo(this.ip);
-                    }
-                    return;
-                }
-            }.bind(this), cfg);
-        } catch (error) {
-            this.parent.log('debug', 'Ping failed');
-            if (this.connected) {
-                this.webSocket.reconnect();
-                // this.disconnect();
-                // this.connectTo(this.ip);
-            }
-            return;
-        }
-    }
-
     disconnect() {
         this.parent.log('debug', 'Disconnecting from Hive Device');
-        if (this.pingTimer != null) {
-            clearInterval(this.pingTimer);
-            this.pingTimer = null;
-        }
         if (this.webSocket)
             this.webSocket.close();
         this.webSocket = null;
@@ -188,14 +147,6 @@ class SVRemotePatch {
         this.url = 'ws://' + this.ip + ':9002';
         this.parent.log('debug', 'Connecting to Hive Device');
         this.webSocket = new AutoReconnectingWebSocket(this.url, [], 3000, 1000);
-
-
-        if (this.pingTimer != null) {
-            clearInterval(this.pingTimer);
-            this.pingTimer = null;
-        }
-
-        this.pingTimer = setInterval(this.tryPing.bind(this), 5000);
 
         this.connectTime = Date.now();
 
