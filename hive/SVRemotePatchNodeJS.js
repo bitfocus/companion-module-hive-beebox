@@ -2,9 +2,6 @@ const WebSocket = require('ws')
 const ping = require('ping');
 const util = require('util');
 var lastErrorTime = Date.now();
-var lastCloseTime = Date.now();
-
-
 
 class AutoReconnectingWebSocket {
     constructor(url, protocols, reconnectInterval = 3000, timeoutDuration = 5000, maxRetries = Infinity) {
@@ -129,20 +126,19 @@ class SVRemotePatch {
                     return;
                 } else {
                     this.parent.log('debug', 'Ping failed');
-                    // lets try reconnecting
-                    this.webSocket.close();
-                    this.webSocket.connect();
-                    this.parent.log('debug', 'Attempting to connect to Hive Device');
+                    if (this.connected) {
+                        this.disconnect();
+                        this.connectTo(this.ip);
+                    }
                     return;
                 }
             }.bind(this), cfg);
         } catch (error) {
             this.parent.log('debug', 'Ping failed');
-            // lets try reconnecting
-            this.webSocket.close();
-            this.connected = false;
-            this.webSocket.connect();
-            this.parent.log('debug', 'Attempting to connect to Hive Device');
+            if (this.connected) {
+                this.disconnect();
+                this.connectTo(this.ip);
+            }
             return;
         }
     }
