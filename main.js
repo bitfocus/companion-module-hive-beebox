@@ -4,6 +4,7 @@ const UpdateActions = require('./actions')
 const UpdateFeedbacks = require('./feedbacks')
 const UpdatePresets = require('./presets')
 const UpdateVariableDefinitions = require('./variables')
+const ping = require('ping');
 const SVRemotePatch = require('./hive/SVRemotePatchNodeJS');
 
 ipRegex = '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
@@ -13,6 +14,7 @@ class HiveBeebladeInstance extends InstanceBase {
 		super(internal)
 		this.localSVPatch = null;
 		this.updateTimer = null;
+		this.watchesConnected = false;
 		// array of parameter descriptor objects
 		// info calculated from HiveBuzzParameters.js on Hive Device version 1.0.308
 		this.paramDescriptors = [
@@ -138,6 +140,7 @@ class HiveBeebladeInstance extends InstanceBase {
 
 	async init(config) {
 		this.config = config
+		this.pingTimer = null;
 		this.blade = {
 			playlist: null,
 			timeline: null,
@@ -163,6 +166,11 @@ class HiveBeebladeInstance extends InstanceBase {
 
 		//ip = "1.6.7";
 
+		if (this.pingTimer) {
+			clearInterval(this.pingTimer);
+			this.pingTimer = null;
+		}
+
 		if (this.localSVPatch) {
 			this.localSVPatch.disconnect();
 			this.localSVPatch = null;
@@ -185,10 +193,24 @@ class HiveBeebladeInstance extends InstanceBase {
 		this.localSVPatch.SetOnConnectCallback(() => {
 			this.updateStatus(InstanceStatus.Ok, 'Connected');
 			// get latest data
-			this.updateBlade()
+			this.updateBlade();
+			this.pingTimer = setInterval(() => {
+				ping.sys.probe(ip, (isAlive) => {
+					if (isAlive) {
+						this.log('debug', 'Ping successful');
+					} else {
+						this.log('debug', 'Ping failed');
+						this.initializePatch(ip);
+					}
+				}, { timeout: 1 });
+			}, 3000);
 		});
 
 		this.localSVPatch.SetOnDisconnectCallback(() => {
+			if (this.pingTimer) {
+				clearInterval(this.pingTimer);
+				this.pingTimer = null;
+			}
 			this.updateStatus(InstanceStatus.Disconnected, 'Disconnected');
 		});
 
@@ -413,6 +435,7 @@ class HiveBeebladeInstance extends InstanceBase {
 				'playlistcurrentrow': r + 1
 			})
 		});
+		this.watchesConnected = true;
 	}
 
 

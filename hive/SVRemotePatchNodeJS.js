@@ -14,11 +14,14 @@ class AutoReconnectingWebSocket {
         this.websocket = null;
         this.isClosed = false;
         this.retries = 0;
+        this.timeout = null;
 
         this.connect();
     }
 
     connect() {
+
+        this.isClosed = false;
         if (this.retries >= this.maxRetries) {
             console.error("Maximum reconnect attempts reached.");
             return;
@@ -26,34 +29,34 @@ class AutoReconnectingWebSocket {
 
         console.log("Attempting to connect...");
         this.websocket = new WebSocket(this.url, this.protocols);
-        let timeout;
 
-        timeout = setTimeout(() => {
+
+        this.timeout = setTimeout(() => {
             if (this.websocket.readyState !== WebSocket.OPEN) {
-                console.error("WebSocket connection timed out.");
+                console.log("WebSocket connection timed out.");
                 this.websocket.close(); // Close the connection if timeout occurs
             }
         }, this.timeoutDuration);
 
         this.websocket.onopen = (event) => {
-            clearTimeout(timeout);
+            clearTimeout(this.timeout);
+            this.timeout = null;
             console.log("WebSocket connected successfully.");
             this.retries = 0; // Reset retries on successful connection
             if (this.onopen) this.onopen(event);
         };
 
         this.websocket.onmessage = (event) => {
-            console.log("Message received:", event.data);
             if (this.onmessage) this.onmessage(event);
         };
 
         this.websocket.onerror = (event) => {
-            clearTimeout(timeout);
+            clearTimeout(this.timeout);
             if (this.onerror) this.onerror(event);
         };
 
         this.websocket.onclose = (event) => {
-            clearTimeout(timeout);
+            clearTimeout(this.timeout);
 
             if (!this.isClosed) {
                 this.retries++;
@@ -63,6 +66,24 @@ class AutoReconnectingWebSocket {
 
             if (this.onclose) this.onclose(event);
         };
+    }
+
+    reconnect() {
+        if (!this.websocket) return;
+
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        let event = {
+            message: "Network disconnect...socket connection lost",
+            event: {}
+        }
+
+        this.websocket.terminate();
+        this.websocket = null;
+        // if (this.onclose) this.onclose(event);
+        this.retries = 0;
+        this.connect();
     }
 
     send(data) {
@@ -112,6 +133,7 @@ class SVRemotePatch {
     }
 
     tryPing() {
+        return;
 
         this.parent.log('debug', 'Attempting to ping Hive Device');
         try {
@@ -127,8 +149,9 @@ class SVRemotePatch {
                 } else {
                     this.parent.log('debug', 'Ping failed');
                     if (this.connected) {
-                        this.disconnect();
-                        this.connectTo(this.ip);
+                        this.webSocket.reconnect();
+                        // this.disconnect();
+                        // this.connectTo(this.ip);
                     }
                     return;
                 }
@@ -136,8 +159,9 @@ class SVRemotePatch {
         } catch (error) {
             this.parent.log('debug', 'Ping failed');
             if (this.connected) {
-                this.disconnect();
-                this.connectTo(this.ip);
+                this.webSocket.reconnect();
+                // this.disconnect();
+                // this.connectTo(this.ip);
             }
             return;
         }
