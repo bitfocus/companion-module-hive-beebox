@@ -665,7 +665,10 @@ class HiveBeebladeInstance extends InstanceBase {
 			return await result.json();
 		} catch (error) {
 			// Handle the error here
-			let code = error.code
+			if (error.code && error.code === 20) {
+				this.log('debug', 'Fetch aborted');
+				return null;
+			}
 			console.error(error);
 			return null;
 		}
