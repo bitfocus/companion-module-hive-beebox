@@ -646,6 +646,10 @@ class HiveBeebladeInstance extends InstanceBase {
 
 	async GetTileListFromServer() {
 		var jsParams = {};
+		// abort any previous fetch that has not happened
+		this.fetchController.abort();
+		this.fetchController = new AbortController();
+		this.fetchSignal = this.fetchController.signal;
 
 		let tileList = await this.NectarAPICommand('/api/getTileList',
 			{
