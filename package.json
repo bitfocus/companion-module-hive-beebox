@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-your-module-name.git"
+		"url": "git+https://github.com/noodles4694/companion-module-hive-beebox"
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.10.0",
