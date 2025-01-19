@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/noodles4694/companion-module-hive-beebox"
+		"url": "git+https://github.com/bitfocus/companion-module-hive-beebox/"
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.10.0",
@@ -21,6 +21,5 @@
 		"@companion-module/tools": "^2.1.0",
 		"prettier": "^3.3.3"
 	},
-	"prettier": "@companion-module/tools/.prettierrc.json",
-	"packageManager": "yarn@4.4.1"
+	"prettier": "@companion-module/tools/.prettierrc.json"
 }
