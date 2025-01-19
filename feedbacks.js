@@ -27,11 +27,18 @@ module.exports = async function (self) {
 						{ id: 'screenberrycal', label: 'Screenberry Calibration Mode' },
 						{ id: 'viosocal', label: 'Vioso Calibration Mode' },
 					],
-					default: 'playlist'
+					default: 'playlist',
 				},
 			],
 			callback: (feedback) => {
-				if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry) {
+				if (
+					!self.blade.playlist ||
+					!self.blade.timeline ||
+					!self.blade.timecode ||
+					!self.blade.schedule ||
+					!self.blade.vioso ||
+					!self.blade.screenberry
+				) {
 					return true
 				}
 				switch (feedback.options.module) {
@@ -81,11 +88,18 @@ module.exports = async function (self) {
 						{ id: 'screenberrycal', label: 'Screenberry Calibration Mode' },
 						{ id: 'viosocal', label: 'Vioso Calibration Mode' },
 					],
-					default: 'playlist'
+					default: 'playlist',
 				},
 			],
 			callback: (feedback) => {
-				if (!self.blade.playlist || !self.blade.timeline || !self.blade.timecode || !self.blade.schedule || !self.blade.vioso || !self.blade.screenberry) {
+				if (
+					!self.blade.playlist ||
+					!self.blade.timeline ||
+					!self.blade.timecode ||
+					!self.blade.schedule ||
+					!self.blade.vioso ||
+					!self.blade.screenberry
+				) {
 					return false
 				}
 				switch (feedback.options.module) {
@@ -109,6 +123,6 @@ module.exports = async function (self) {
 						return self.blade.vioso.calibrationMode === 1
 				}
 			},
-		}
+		},
 	})
 }

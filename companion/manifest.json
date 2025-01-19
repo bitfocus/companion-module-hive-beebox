@@ -22,5 +22,16 @@
 	"legacyIds": [],
 	"manufacturer": "Hive",
 	"products": ["Beeblade"],
-	"keywords": ["Media Player", "Media Engine","Player_1","Player_2","Player_3","Player_4","PLayer 1","Player 2","Player 3","Player 4"]
+	"keywords": [
+		"Media Player",
+		"Media Engine",
+		"Player_1",
+		"Player_2",
+		"Player_3",
+		"Player_4",
+		"PLayer 1",
+		"Player 2",
+		"Player 3",
+		"Player 4"
+	]
 }

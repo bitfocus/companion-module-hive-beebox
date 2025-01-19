@@ -17,6 +17,6 @@ module.exports = function (self) {
 		{ variableId: 'numworkers', name: 'Number Of Workers' },
 		{ variableId: 'devicename', name: 'Device Name' },
 		{ variableId: 'remainingstorage', name: 'Remaining Storage Space GB' },
-		{ variableId: 'status', name: 'Status' }
+		{ variableId: 'status', name: 'Status' },
 	])
 }
