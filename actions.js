@@ -740,11 +740,11 @@ module.exports = function (self) {
 						self.localSVPatch.SetPatchDouble(transitiondurationpath, action.options.transitionduration)
 						self.localSVPatch.SetPatchDouble(transitionmodepath, action.options.transitionmode)
 						self.localSVPatch.SetPatchDouble(path, outVal)
+					} else {
+						self.localSVPatch.SetPatchDouble(path, outVal)
 					}
-				} else {
-					self.localSVPatch.SetPatchDouble(path, outVal)
 				}
-			},
+			}
 		},
 		sendcommand: {
 			name: 'Send Command',
