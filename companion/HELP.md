@@ -1,4 +1,4 @@
-## Hive Beeblade Module
+## Hive Beebox / Beeblade Module
 
 This module provides conntrol for the Hive Beeblade range of media engine products. It should also work for all derivatives of the Beeblade such as Beebox, Beehive, Nucleus and to some extent older legacy models such as Player_1, Player_2, Player_3 and Player_4 although functionality on these devices may be limited.
 
