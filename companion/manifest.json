@@ -3,7 +3,7 @@
 	"name": "hive-beebox",
 	"shortname": "beebox",
 	"description": "Hive Beebox and Beeblade controller",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-hive-beebox/",
 	"bugs": "https://github.com/bitfocus/companion-module-hive-beebox/issues",

@@ -421,28 +421,24 @@ module.exports = function (self) {
 				{
 					id: 'int1000',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (0 - 1000)',
 					default: 0,
 					min: 0,
 					max: 1000,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'integer' && par.min === 0 && par.max == 1000
+						let show = options.parameter === 'file' || options.parameter === 'folder'
 						return show
 					},
 				},
 				{
 					id: 'int100',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (0 - 100)',
 					default: 0,
 					min: 0,
 					max: 100,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'integer' && par.min === 0 && par.max == 100
+						let show = options.parameter === 'lut' || options.parameter === 'movementspeed'
 						return show
 					},
 				},
@@ -453,7 +449,6 @@ module.exports = function (self) {
 					default: 0,
 					min: 0,
 					max: 9999999,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
 						let show = options.parameter === 'inframe'
 						return show
@@ -466,7 +461,6 @@ module.exports = function (self) {
 					default: 9999999,
 					min: 0,
 					max: 9999999,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
 						let show = options.parameter === 'outframe'
 						return show
@@ -475,11 +469,10 @@ module.exports = function (self) {
 				{
 					id: 'hour',
 					type: 'number',
-					label: 'Out Frame',
+					label: 'Value (0 - 23)',
 					default: 0,
 					min: 0,
 					max: 23,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
 						let show = options.parameter === 'tchour'
 						return show
@@ -488,11 +481,10 @@ module.exports = function (self) {
 				{
 					id: 'minsec',
 					type: 'number',
-					label: 'Out Frame',
+					label: 'Value (0 - 59)',
 					default: 0,
 					min: 0,
 					max: 59,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
 						let show = options.parameter === 'tcminute' || options.parameter === 'tcsecond'
 						return show
@@ -501,11 +493,10 @@ module.exports = function (self) {
 				{
 					id: 'frame',
 					type: 'number',
-					label: 'Out Frame',
+					label: 'Valuwe (0 - 29)',
 					default: 0,
 					min: 0,
 					max: 29,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
 						let show = options.parameter === 'tcframe'
 						return show
@@ -514,45 +505,39 @@ module.exports = function (self) {
 				{
 					id: 'pos',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (-100 - 100)',
 					default: 0,
 					min: -100,
 					max: 100,
 					range: true,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'range' && par.min === -100 && par.max === 100
+						let show = options.parameter === 'posx' || options.parameter === 'posy' || options.parameter === 'posz' || options.parameter === 'red' || options.parameter === 'green' || options.parameter === 'blue' || options.parameter === 'alpha' || options.parameter === 'contrast' || options.parameter === 'saturation'
 						return show
 					},
 				},
 				{
 					id: 'rot',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (-1440 - 1440)',
 					default: 0,
 					min: -1440,
 					max: 1440,
 					range: true,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'range' && par.min === -1440 && par.max === 1440
+						let show = options.parameter === 'rotx' || options.parameter === 'roty' || options.parameter === 'rotz'
 						return show
 					},
 				},
 				{
 					id: 'scale',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (0 - 1000)',
 					default: 100,
 					min: 0,
 					max: 1000,
 					range: true,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'range' && par.min === 0 && par.max === 1000
+						let show = options.parameter === 'scale'
 						return show
 					},
 				},
@@ -571,22 +556,20 @@ module.exports = function (self) {
 				{
 					id: 'level',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (0 - 100)',
 					default: 100,
 					min: 0,
 					max: 100,
 					range: true,
-					isVisibleData: self.paramDescriptors,
 					isVisible: (options, data) => {
-						let par = data.find((param) => param.name === options.parameter)
-						let show = par.type === 'range' && par.min === 0 && par.max === 100
+						let show = options.parameter === 'intensity' || options.parameter === 'aspect' || options.parameter === 'hue' || options.parameter === 'strobe' || options.parameter === 'volume'
 						return show
 					},
 				},
 				{
 					id: 'playspeed',
 					type: 'number',
-					label: 'Value',
+					label: 'Value (0 - 1000)',
 					default: 100,
 					min: 0,
 					max: 1000,
