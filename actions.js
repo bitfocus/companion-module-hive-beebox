@@ -392,7 +392,7 @@ module.exports = function (self) {
 					case 'mapping':
 						self.localSVPatch.SetPatchJSON('/Output Mapping', dataObj)
 						break
-					case 'mapping':
+					case 'settings':
 						self.localSVPatch.SetPatchJSON('/System Settings', dataObj)
 						break
 				}
