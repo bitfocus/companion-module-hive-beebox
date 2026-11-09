@@ -12,14 +12,14 @@
 		"url": "git+https://github.com/bitfocus/companion-module-hive-beebox/"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.8.0",
+		"@companion-module/base": "~1.15.1",
 		"ping": "^0.4.4",
 		"utils": "^0.3.1",
 		"ws": "^8.21.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.8.0",
-		"prettier": "^3.3.3"
+		"@companion-module/tools": "^2.9.0",
+		"prettier": "^3.6.2"
 	},
 	"prettier": "@companion-module/tools/.prettierrc.json"
 }
