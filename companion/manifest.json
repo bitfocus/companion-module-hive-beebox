@@ -3,7 +3,7 @@
 	"name": "hive-beebox",
 	"shortname": "beebox",
 	"description": "Hive Beebox and Beeblade controller",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-hive-beebox/",
 	"bugs": "https://github.com/bitfocus/companion-module-hive-beebox/issues",
@@ -14,10 +14,13 @@
 		}
 	],
 	"runtime": {
-		"type": "node18",
+		"type": "node26",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../main.js"
+		"entrypoint": "../main.js",
+		"permissions": {
+			"child-process": true
+		}
 	},
 	"legacyIds": [],
 	"manufacturer": "Hive",
